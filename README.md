@@ -6,8 +6,8 @@ The Mersenne Twister pseudo-random number generator (PRNG)
 This is an implementation of fast PRNG called **MT19937**, meaning it has a
 period of 2^19937-1, which is a Mersenne prime.
 
-While this PRNG is very fast, it is *not* suitable for cryptographic code.
-It is suitable for code that have high performance requirements for quality
+While this PRNG is quite fast, it is *not* suitable for cryptographic code.
+It works well for code that have high performance requirements for quality
 pseudo-random numbers, such as Monte Carlo simulations, probabilistic
 algorithms or even games --- and so on.
 
@@ -26,8 +26,18 @@ Portability, speed and so on
 
 The MT19937 algorithm is inherently 32-bit, but works nicely on 64-bit
 systems.  Regarding speed, I haven't optimized the code in any way.  It's
-probably *fast enough*, though.  Above all, the *code* is short, clean and
-easy to understand.  Didn't Alan Perlis have a comment about that?
+probably *fast enough*, though.  On a simple test on my system, the
+unoptimized runs just as fast as the *optimized* LIBC rand() code.
+
+But above all, the aim of this implementation to give a short and clean
+implementation, with code that is readable.
+
+Note that while the Mersenne Twister function rand_u32() uses the full 32
+bits to to express pseudo-random numbers, the rand() function only uses 31
+bits (because it returns numbers in the range [0...INT32_MAX]).  This means
+that to implement rand() with rand_u32() , we have to chop off the MSB.
+This assumes both that rand() only uses 31 bits and that the system uses
+two's complement for negative numbers.
 
 Compilation and usage
 ---------------------

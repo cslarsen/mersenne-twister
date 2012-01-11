@@ -3,16 +3,16 @@ Mersenne Twister in C++
 
 The Mersenne Twister pseudo-random number generator (PRNG)
 
-This is an implementation of fast PRNG called MT19937,
-meaning it has a period of 2^19937-1, which is a Mersenne
-prime.
+This is an implementation of fast PRNG called MT19937, meaning it has a
+period of 2^19937-1, which is a Mersenne prime.
 
-This PRNG is *fast*, but only suitable for _non-cryptographic_ code.
-For instance, it would be perfect for Monte Carlo simulations,
-etc.
+While this PRNG is very fast, it is *not* suitable for cryptographic code.
+It is suitable for code that have high performance requirements for quality
+pseudo-random numbers, such as Monte Carlo simulations, probabilistic
+algorithms or even games --- and so on.
 
-Drop-in for srand() and rand()
-------------------------------
+Drop-in replacement for LIBC's srand() and rand()
+-------------------------------------------------
 
 This code has been specifically designed as a drop-in replacement for LIBC's
 rand() and srand(); the signatures are identical, and the functions are
@@ -20,6 +20,14 @@ exported with C-style name mangling --- in other words, they should be
 binary compatible.
 
 You can even mix the two PRNGs by wrapping either of them in C++ namespaces.
+
+Portability, speed and so on
+----------------------------
+
+The MT19937 algorithm is inherently 32-bit, but works nicely on 64-bit
+systems.  Regarding speed, I haven't optimized the code in any way.  It's
+probably *fast enough*, though.  Above all, the *code* is short, clean and
+easy to understand.  Didn't Alan Perlis have a comment about that?
 
 Compilation and usage
 ---------------------
@@ -53,10 +61,10 @@ which should produce the following output:
 It will make a quick check that the first 200 numbers with seed = 1 are
 correct.
 
-References
-----------
-The code is a translation of the M519937 pseuco-code at 
-https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister
+Bugs
+----
+
+Please report any bugs to the author.
 
 Author and license
 ------------------
@@ -65,3 +73,9 @@ Written by Christian Stigen Larsen, http://csl.sublevel3.org
 Distributed under the modified BSD license.
 
 2012-01-11
+
+References
+----------
+The code is a translation of the MT19937 pseuco-code at 
+https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister
+

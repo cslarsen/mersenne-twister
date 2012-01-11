@@ -30,6 +30,10 @@ Luckily, the resulting code is *fast enough*.  Indeed, in a simple benchmark
 I did on my system, the **unoptimized** code ran just as fast as the
 **optimized** version of rand() that came with the OS.
 
+If you want to optimize the code, you can start by unrolling the loop in
+generate_numbers() to avoid all the modulus operations.  This is trivial,
+but I'm not sure if it will affect performance.
+
 Portability
 -----------
 

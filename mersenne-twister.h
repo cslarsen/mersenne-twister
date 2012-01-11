@@ -19,6 +19,8 @@
  * Distributed under the modified BSD license.
  */
 
+#include <stdint.h>
+
 /*
  * Maximum number you can get from rand().
  */
@@ -30,6 +32,11 @@
 extern "C" void srand(unsigned seed);
 
 /*
- * Extract a random integer in the range 0...RAND_MAX.
+ * Extract a pseudo-random integer in the range 0 ... RAND_MAX.
  */
 extern "C" int rand();
+
+/*
+ * Extract a pseudo-random unsigned 32-bit integer in the range 0 ... UINT32_MAX
+ */
+extern "C" uint32_t rand_u32();

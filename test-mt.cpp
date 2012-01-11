@@ -22,7 +22,7 @@
 /*
  * Reference mersenne twister numbers for seed = 1.
  */
-int expected[] = {
+uint32_t expected[] = {
   1791095845, 4282876139, 3093770124, 4005303368,     491263,
    550290313, 1298508491, 4290846341,  630311759, 1013994432,
    396591248, 1703301249,  799981516, 1666063943, 1484172013,
@@ -75,13 +75,12 @@ int main()
     seed);
 
   for ( int n=0; n<200; ++n ) {
-    int r = rand();
+    uint32_t r = rand_u32();
 
     bool error = r != expected[n]; 
     if ( error ) ++errors;
 
-    printf("%10u%c%c",
-      static_cast<uint32_t>(r),
+    printf("%10u%c%c", r,
       error? '*' : ' ',
       n % 5 == 4 ? '\n' : ' ');
   }

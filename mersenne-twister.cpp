@@ -51,7 +51,7 @@ extern "C" void srand(unsigned seed)
 
 }
 
-extern "C" int rand()
+extern "C" uint32_t rand_u32()
 {
   if ( !index )
     generate_numbers();
@@ -65,5 +65,15 @@ extern "C" int rand()
   y ^=  y>>18;
 
   index = (index+1) % SIZE;
-  return static_cast<int>(y);
+  return y;
+}
+
+extern "C" int rand()
+{
+  /*
+   * Implement rand() using rand_u32().
+   */
+
+  int r = static_cast<int>(rand_u32());
+  return r<0? -r : r;
 }

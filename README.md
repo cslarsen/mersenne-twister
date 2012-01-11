@@ -14,9 +14,12 @@ etc.
 Drop-in for srand() and rand()
 ------------------------------
 
-This code has been designed as a drop-in replacement for libc rand and
-srand().  If you need to mix them, you should encapsulate this code in a
-namespace.
+This code has been specifically designed as a drop-in replacement for LIBC's
+rand() and srand(); the signatures are identical, and the functions are
+exported with C-style name mangling --- in other words, they should be
+binary compatible.
+
+You can even mix the two PRNGs by wrapping either of them in C++ namespaces.
 
 Compilation and usage
 ---------------------

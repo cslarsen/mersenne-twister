@@ -21,23 +21,28 @@ binary compatible.
 
 You can even mix the two PRNGs by wrapping either of them in C++ namespaces.
 
-Portability, speed and so on
-----------------------------
+Performance
+-----------
+
+Regarding speed; I haven't optimized the code in any way.  My aim was to
+write a *clean* and *readable* implementation of the Mersenne Twister.
+Luckily, the resulting code is *fast enough*.  Indeed, in a simple benchmark
+I did on my system, the **unoptimized** code ran just as fast as the
+**optimized** version of rand() that came with the OS.
+
+Portability
+-----------
 
 The MT19937 algorithm is inherently 32-bit, but works nicely on 64-bit
-systems.  Regarding speed, I haven't optimized the code in any way.  It's
-probably *fast enough*, though.  On a simple test on my system, the
-unoptimized runs just as fast as the *optimized* LIBC rand() code.
+systems.  
 
-But above all, the aim of this implementation to give a short and clean
-implementation, with code that is readable.
+While it uses the full 32 bits to express pseudo-random numbers, rand() does
+not --- by design it will only return numbers in the range 0 ... INT32_MAX.
+Effectvely, it's only using 31 bits of randomness.  This is a well known
+point of criticism for rand().
 
-Note that while the Mersenne Twister function rand_u32() uses the full 32
-bits to to express pseudo-random numbers, the rand() function only uses 31
-bits (because it returns numbers in the range [0...INT32_MAX]).  This means
-that to implement rand() with rand_u32() , we have to chop off the MSB.
-This assumes both that rand() only uses 31 bits and that the system uses
-two's complement for negative numbers.
+To implement rand() with rand_u32(), I just chop off the MSB.  This assumes
+that the compiler is using two's complement for encoding negative numbers.
 
 Compilation and usage
 ---------------------

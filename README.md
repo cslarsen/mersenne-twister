@@ -1,15 +1,17 @@
 A Mersenne Twister in C++
 =========================
 
-The Mersenne Twister pseudo-random number generator (PRNG)
+This is an implementation of the fast pseudo-random number generator (PRNG)
+**MT19937**, meaning it has a period of 2^19937-1, which is a Mersenne prime.
+Colloquially, it is called the _Mersenne Twister_ (MT).
 
-This is an implementation of fast PRNG called **MT19937**, meaning it has a
-period of 2^19937-1, which is a Mersenne prime.
+MT is regarded for it's performance and high quality pseudo-random numbers.
+Despite of this, it is *not* suitable for cryptographic code.  It was
+designed for numerical simulations such as Monte Carlo simulations,
+probabilistic algorithms and so on.
 
-While this PRNG is quite fast, it is *not* suitable for cryptographic code.
-It works well for code that have high performance requirements for quality
-pseudo-random numbers, such as Monte Carlo simulations, probabilistic
-algorithms or even games --- and so on.
+You can read more about it on the Wikipedia page at
+https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister
 
 Drop-in replacement for LIBC's srand() and rand()
 -------------------------------------------------

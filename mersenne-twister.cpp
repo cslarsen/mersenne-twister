@@ -71,9 +71,15 @@ extern "C" uint32_t rand_u32()
 extern "C" int rand()
 {
   /*
-   * Implement rand() using rand_u32().
+   * PORTABILITY WARNING:
+   *
+   * rand_u32() uses all 32-bits for the pseudo-random number,
+   * but rand() must return a number from 0 ... RAND_MAX.
+   *
+   * We'll just assume that (1) rand() only uses 31-bits worth of data, and
+   * that (2) we're on a two's complement system.  Therefore we'll just chop
+   * off the MSB from rand_u32().
+   *
    */
-
-  int r = static_cast<int>(rand_u32());
-  return r<0? -r : r;
+  return 0x7FFFFFFF & rand_u32();
 }

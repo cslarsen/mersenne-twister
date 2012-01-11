@@ -42,10 +42,10 @@ Portability
 The MT19937 algorithm is inherently 32-bit, but works nicely on 64-bit
 systems.  
 
-While it uses the full 32 bits to express pseudo-random numbers, rand() does
-not --- by design it will only return numbers in the range 0 ... INT32_MAX.
-Effectvely, it's only using 31 bits of randomness.  This is a well known
-point of criticism for rand().
+While it uses the all 32 bits to express pseudo-random numbers, rand() does
+not --- by design it will only return numbers in the range 0 ... INT32_MAX,
+effectively using only 31 bits of randomness.  This is a well known point of
+criticism for rand().
 
 To implement rand() with rand_u32(), I just chop off the MSB.  This assumes
 that the compiler is using two's complement for encoding negative numbers.

@@ -5,7 +5,7 @@ This is an implementation of the fast pseudo-random number generator (PRNG)
 **MT19937**, colloquially called the _Mersenne Twister_.  It was given this
 name because it has a period of 2^19937 - 1, which is a Mersenne prime.
 
-The Mersenne Twister is highly regarded for its good performance and quality pseudo-random numbers.
+The Mersenne Twister is highly regarded for its performance and high quality pseudo-random numbers.
 In spite of this, it is *not* suited for cryptographic code, because one
 only needs to observe 624 iterates to predict all future ones.  It was
 designed with statistical simulations in mind, and should therefore be quite

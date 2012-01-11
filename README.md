@@ -17,12 +17,11 @@ https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister
 Drop-in replacement for libc's srand() and rand()
 -------------------------------------------------
 
-This code has been specifically designed as a drop-in replacement for LIBC's
-rand() and srand(); the signatures are identical, and the functions are
-exported with C-style name mangling --- in other words, they should be
-binary compatible.
+This implementation was specifically designed to be a drop-in replacement
+for libc's rand() and srand().  The function signatures are identical with
+libc's and use C-style name mangling for binary compatibility.
 
-You can even mix the two PRNGs by wrapping either of them in C++ namespaces.
+You can even mix the two PRNGs by wrapping either of them in a namespaces.
 
 Performance
 -----------

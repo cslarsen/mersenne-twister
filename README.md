@@ -1,9 +1,9 @@
-Mersenne Twister in C++
-=======================
+A Mersenne Twister in C++
+=========================
 
 The Mersenne Twister pseudo-random number generator (PRNG)
 
-This is an implementation of fast PRNG called MT19937, meaning it has a
+This is an implementation of fast PRNG called **MT19937**, meaning it has a
 period of 2^19937-1, which is a Mersenne prime.
 
 While this PRNG is very fast, it is *not* suitable for cryptographic code.

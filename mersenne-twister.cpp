@@ -19,13 +19,13 @@
 #include <stdint.h>
 #include "mersenne-twister.h"
 
-static const uint16_t SIZE = 624;
+static const unsigned SIZE = 624;
 static uint32_t MT[SIZE];
-static uint16_t index = 0;
+static unsigned index = 0;
 
 static void generate_numbers()
 {
-  for ( uint16_t i=0; i<SIZE; ++i ) {
+  for ( unsigned i=0; i<SIZE; ++i ) {
     uint32_t y = (0x80000000 & MT[i]) |           // 32nd MSB
                  (0x7FFFFFFF & MT[(i+1) % SIZE]); // 31 LSB
 
@@ -46,7 +46,7 @@ extern "C" void initialize(uint32_t seed)
    *
    */
 
-  for ( uint16_t i=1; i<SIZE; ++i )
+  for ( unsigned i=1; i<SIZE; ++i )
     MT[i] = 0xFFFFFFFF & (0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i);
 
 }

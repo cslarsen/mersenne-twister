@@ -19,21 +19,54 @@
 #include <stdint.h>
 #include "mersenne-twister.h"
 
-static const unsigned SIZE = 624;
+static const unsigned SIZE   = 624;
+static const unsigned PERIOD = 397;
+static const unsigned DIFF   = SIZE-PERIOD;
+
 static uint32_t MT[SIZE];
 static unsigned index = 0;
 
-static void generate_numbers()
+#define M32(x) (0x80000000 & x) // 32nd Most Significant Bit
+#define L31(x) (0x7FFFFFFF & x) // 31 Least Significant Bits
+#define ODD(x) (x & 1) // Check if number is odd
+
+static inline void generate_numbers()
 {
-  for ( unsigned i=0; i<SIZE; ++i ) {
-    uint32_t y = (0x80000000 & MT[i]) |           // 32nd MSB
-                 (0x7FFFFFFF & MT[(i+1) % SIZE]); // 31 LSB
+  /*
+   * Originally, we had one loop with i going from [0, SIZE) and two
+   * modulues operations:
+   *
+   * for ( register unsigned i=0; i<SIZE; ++i ) {
+   *   register uint32_t y = M32(MT[i]) | L31(MT[(i+1) % SIZE]);
+   *   MT[i] = MT[(i + PERIOD) % SIZE] ^ (y>>1);
+   *   if ( ODD(y) ) MT[i] ^= 0x9908b0df;
+   * }
+   *
+   * For performance reasons, we've unrolled the loop three times, thus
+   * mitigating the need for any modulus operations.
+   */
 
-    MT[i] = MT[(i + 397) % SIZE] ^ (y>>1);
+  register uint32_t y;
+  register unsigned i;
 
-    if ( y & 1 ) // odd?
-      MT[i] ^= 0x9908b0df;
+  // i = [0 ... 226]
+  for ( i=0; i<DIFF; ++i ) {
+    y = M32(MT[i]) | L31(MT[i+1]);
+    MT[i] = MT[i + PERIOD] ^ (y>>1);
+    if ( ODD(y) ) MT[i] ^= 0x9908b0df;
   }
+
+  // i = [227 ... 622]
+  for ( i=DIFF; i<(SIZE-1); ++i ) {
+    y = M32(MT[i]) | L31(MT[i+1]);
+    MT[i] = MT[i-DIFF] ^ (y>>1);
+    if ( ODD(y) ) MT[i] ^= 0x9908b0df;
+  }
+
+  // i = [623]
+  y = M32(MT[SIZE-1]) | L31(MT[SIZE]);
+  MT[SIZE-1] = MT[PERIOD-1] ^ (y>>1);
+  if ( ODD(y) ) MT[SIZE-1] ^= 0x9908b0df;
 }
 
 extern "C" void initialize(uint32_t seed)
@@ -46,7 +79,7 @@ extern "C" void initialize(uint32_t seed)
    *
    */
 
-  for ( unsigned i=1; i<SIZE; ++i )
+  for ( register unsigned i=1; i<SIZE; ++i )
     MT[i] = 0xFFFFFFFF & (0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i);
 
 }
@@ -56,15 +89,17 @@ extern "C" uint32_t rand_u32()
   if ( !index )
     generate_numbers();
 
-  uint32_t y = MT[index];
+  register uint32_t y = MT[index];
 
   // Tempering
-  y ^=  y>>11;
-  y ^= (y<< 7) & 0x9d2c5680;
-  y ^= (y<<15) & 0xefc60000;
-  y ^=  y>>18;
+  y ^= y>>11;
+  y ^= y<<7 & 0x9d2c5680;
+  y ^= y<<15 & 0xefc60000;
+  y ^= y>>18;
 
-  index = (index+1) % SIZE;
+  if ( ++index == SIZE )
+    index = 0;
+
   return y;
 }
 
@@ -78,7 +113,7 @@ extern "C" int rand()
    *
    * We'll just assume that (1) rand() only uses 31-bits worth of data, and
    * that (2) we're on a two's complement system.  Therefore we'll just chop
-   * off the MSB from rand_u32().
+   * off the M32 from rand_u32().
    *
    */
   return 0x7FFFFFFF & rand_u32();

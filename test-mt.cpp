@@ -71,7 +71,8 @@ int main()
   int seed = 1;
   srand(seed);
 
-  printf("Mersenne Twister with seed %d\n\n", seed);
+  printf("Mersenne Twister -- printing the first 200 numbers seed %d\n\n",
+    seed);
 
   for ( int n=0; n<200; ++n ) {
     int r = rand();

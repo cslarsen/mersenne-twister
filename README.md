@@ -36,6 +36,10 @@ If you want to optimize the code, you can start by unrolling the loop in
 generate_numbers() to avoid all the modulus operations.  This is trivial,
 but I'm not sure if it will affect performance.
 
+**EDIT** I've now unrolled the generate_numbers() loop to avoid modulus
+operations and used better data types for indices.  This is still a very
+simple optimization trick, but the code now runs twice as fast.
+
 Portability
 -----------
 

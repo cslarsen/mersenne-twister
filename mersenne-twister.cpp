@@ -36,9 +36,9 @@ static void generate_numbers()
   }
 }
 
-extern "C" void srand(unsigned seed)
+extern "C" void initialize(uint32_t seed)
 {
-  MT[0] = static_cast<uint32_t>(seed);
+  MT[0] = seed;
 
   /*
    * For an explanation about the magic number 0x6c078965, see
@@ -82,4 +82,9 @@ extern "C" int rand()
    *
    */
   return 0x7FFFFFFF & rand_u32();
+}
+
+extern "C" void srand(unsigned seed)
+{
+  initialize(static_cast<uint32_t>(seed));
 }

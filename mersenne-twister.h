@@ -28,11 +28,13 @@
 
 /*
  * Initialize the number generator with given seed.
+ * (LIBC REPLACEMENT FUNCTION)
  */
 extern "C" void srand(unsigned seed);
 
 /*
  * Extract a pseudo-random integer in the range 0 ... RAND_MAX.
+ * (LIBC REPLACEMENT FUNCTION)
  */
 extern "C" int rand();
 
@@ -40,3 +42,8 @@ extern "C" int rand();
  * Extract a pseudo-random unsigned 32-bit integer in the range 0 ... UINT32_MAX
  */
 extern "C" uint32_t rand_u32();
+
+/*
+ * Initialize with given seed value.
+ */
+extern "C" void initialize(uint32_t seed);

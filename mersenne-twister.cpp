@@ -44,8 +44,11 @@ static inline void generate_numbers()
    *
    * For performance reasons, we've unrolled the loop three times, thus
    * mitigating the need for any modulus operations.
+   *
+   * Anyway, it seems this trick is old hat:
+   * http://www.quadibloc.com/crypto/co4814.htm
+   *
    */
-
   register uint32_t y;
   register unsigned i;
 

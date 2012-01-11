@@ -5,7 +5,7 @@ This is an implementation of the fast pseudo-random number generator (PRNG)
 **MT19937**, meaning it has a period of 2^19937-1, which is a Mersenne prime.
 Colloquially, it is called the _Mersenne Twister_ (MT).
 
-MT is regarded for it's performance and high quality pseudo-random numbers.
+MT is regarded for its performance and high quality pseudo-random numbers.
 Despite of this, it is *not* suitable for cryptographic code.  It was
 designed for numerical simulations such as Monte Carlo simulations,
 probabilistic algorithms and so on.

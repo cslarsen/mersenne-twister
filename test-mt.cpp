@@ -85,6 +85,11 @@ int main()
       n % 5 == 4 ? '\n' : ' ');
   }
 
+  printf("\nFloat values in range [0..1]\n\n");
+
+  for ( int n=0; n<20; ++n )
+    printf("%f%c", randf_cc(), n % 5 == 4 ? '\n' : ' ');
+
   printf("\nFound %u incorrect numbers\n", errors);
   return 0;
 }

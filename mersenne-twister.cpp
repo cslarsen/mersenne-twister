@@ -157,3 +157,18 @@ extern "C" void srand(unsigned seed)
 {
   initialize(static_cast<uint32_t>(seed));
 }
+
+extern "C" float randf_cc()
+{
+  return static_cast<float>(rand_u32())/UINT32_MAX;
+}
+
+extern "C" float randf_co()
+{
+  return static_cast<float>(rand_u32())/(UINT32_MAX+1.0f);
+}
+
+extern "C" float randf_oo()
+{
+  return (static_cast<float>(rand_u32())+0.5f)/(UINT32_MAX+1.0f);
+}

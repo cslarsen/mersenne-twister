@@ -47,3 +47,21 @@ extern "C" uint32_t rand_u32();
  * Initialize with given seed value.
  */
 extern "C" void initialize(uint32_t seed);
+
+/*
+ * Return a random float in the CLOSED range [0, 1]
+ * Mnemonic: randf_co = random float 0=closed 1=closed
+ */
+extern "C" float randf_cc();
+
+/*
+ * Return a random float in the OPEN range [0, 1>
+ * Mnemonic: randf_co = random float 0=closed 1=open
+ */
+extern "C" float randf_co();
+
+/*
+ * Return a random float in the OPEN range <0, 1>
+ * Mnemonic: randf_oo = random float 0=open 1=open
+ */
+extern "C" float randf_oo();

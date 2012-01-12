@@ -72,17 +72,41 @@ static inline void generate_numbers()
 
 extern "C" void initialize(uint32_t seed)
 {
-  MT[0] = seed;
-
   /*
-   * For an explanation about the magic number 0x6c078965, see
-   * Knuth's THE ART OF COMPUTER PROGRAMMING, volume 2, page 106.
+   * In the loop below, the mask 0xFFFFFFFF is just a guard for
+   * larger than 32-bit word sizes.
+   *
+   * The equation is a linear congruential generator (LCG), one of
+   * the oldest known pseudo-random number generator algorithms,
+   * in the form X_(n+1) = = (a*X_n + c) (mod m).
+   *
+   * We've implicitly got m=32 (mask + word size of 32 bits), so
+   * there is no need to explicitly use modulus.
+   *
+   * What is interesting is the multiplier a.  The one we have
+   * below is 0x6c07865 --- 1812433253 in decimal, and is called
+   * the Borosh-Niederreiter multiplier for modulus 2^32.
+   *
+   * It is mentioned in Knuth's The Art of Computer Programming,
+   * volume 2, page 106, table 1, line 13.  LCGs are treated in
+   * the same book on pages 10-26.
+   *
+   * You can read about LCGs at:
+   * http://en.wikipedia.org/wiki/Linear_congruential_generator
+   *
+   * From that page, it says:
+   *
+   * "A common Mersenne twister implementation, interestingly
+   * enough, uses an LCG to generate seed data.",
+   *
+   * and here you have it:
    *
    */
 
+  MT[0] = seed;
+
   for ( register unsigned i=1; i<SIZE; ++i )
     MT[i] = 0xFFFFFFFF & (0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i);
-
 }
 
 extern "C" uint32_t rand_u32()
@@ -94,7 +118,7 @@ extern "C" uint32_t rand_u32()
 
   // Tempering
   y ^= y>>11;
-  y ^= y<<7 & 0x9d2c5680;
+  y ^= y<< 7 & 0x9d2c5680;
   y ^= y<<15 & 0xefc60000;
   y ^= y>>18;
 

@@ -176,5 +176,5 @@ extern "C" float randf_oo()
 
 extern "C" uint64_t rand_u64()
 {
-  return static_cast<uint64_t>(rand_u32())<<31 | rand_u32();
+  return static_cast<uint64_t>(rand_u32())<<32 | rand_u32();
 }

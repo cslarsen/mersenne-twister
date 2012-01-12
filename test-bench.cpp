@@ -37,9 +37,13 @@ double calls_per_second(double run_secs = 1.0)
   uint64_t count = 0;
   start_timer();
 
-  while ( elapsed_secs() < run_secs ) {
+  while ( count < 10000000 ) {
     rand_u32();
-    ++count;
+
+    if ( (++count % 10000) == 0 ) {
+      if ( elapsed_secs() >= run_secs )
+        break;
+    }
   }
 
   return count / elapsed_secs();
@@ -108,22 +112,22 @@ int main()
   fflush(stdout);
 
   double speed = calls_per_second();
-  uint64_t dim = dimension(speed)-1;
+  uint64_t dim = dimension(speed);
   printf("ca. %.1lf %s / second\n", speed/pow10(dim), unit(dim));
 
   // Multiply up an amount and benchmark again
-  uint64_t count = 20.0*speed;
-  dim = dimension(count)-1;
+  uint64_t count = 10.0*speed;
+  dim = dimension(count);
 
   printf("Generating %.1lf %s numbers... ",
-    (double)count/pow10(dim), unit(dim));
+    (double)count/pow10(dim-1), unit(dim-1));
   fflush(stdout);
 
   double secs = benchmark(count);
   printf("%.2lf seconds\n\n", secs);
 
-  dim = dimension(count)-1;
-  printf("This equals %.1lf %s pseudo-random numbers / second\n\n",
+  dim = dimension(count);
+  printf("This equals %.2lf %s pseudo-random numbers / second\n\n",
     (count/secs)/pow10(dim), unit(dim));
 
   return 0;

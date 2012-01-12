@@ -30,7 +30,7 @@
  * Initialize the number generator with given seed.
  * (LIBC REPLACEMENT FUNCTION)
  */
-extern "C" void srand(unsigned seed);
+extern "C" void srand(unsigned seed_value);
 
 /*
  * Extract a pseudo-random integer in the range 0 ... RAND_MAX.
@@ -44,9 +44,14 @@ extern "C" int rand();
 extern "C" uint32_t rand_u32();
 
 /*
- * Initialize with given seed value.
+ * Combine two unsigned 32-bit pseudo-random numbers into one 64-bit
  */
-extern "C" void initialize(uint32_t seed);
+extern "C" uint64_t rand_u64();
+
+/*
+ * Initialize Mersenne Twister with given seed value.
+ */
+extern "C" void seed(uint32_t seed_value);
 
 /*
  * Return a random float in the CLOSED range [0, 1]

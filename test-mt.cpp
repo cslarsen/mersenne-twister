@@ -91,5 +91,5 @@ int main()
     printf("%f%c", randf_cc(), n % 5 == 4 ? '\n' : ' ');
 
   printf("\nFound %u incorrect numbers\n", errors);
-  return 0;
+  return errors > 0;
 }

@@ -75,7 +75,7 @@ static inline void generate_numbers()
   MT[SIZE-1] = MT[PERIOD-1] ^ (y>>1) ^ MATRIX[ODD(y)];
 }
 
-extern "C" void initialize(uint32_t seed)
+extern "C" void seed(uint32_t value)
 {
   /*
    * The equation below is a linear congruential generator (LCG),
@@ -109,7 +109,7 @@ extern "C" void initialize(uint32_t seed)
    * we can skip the masking with 0xFFFFFFFF below.
    */
 
-  MT[0] = seed;
+  MT[0] = value;
 
   for ( register unsigned i=1; i<SIZE; ++i )
     MT[i] = 0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i;
@@ -154,9 +154,9 @@ extern "C" int rand()
   return static_cast<int>(0x7FFFFFFF & rand_u32());
 }
 
-extern "C" void srand(unsigned seed)
+extern "C" void srand(unsigned value)
 {
-  initialize(static_cast<uint32_t>(seed));
+  seed(static_cast<uint32_t>(value));
 }
 
 extern "C" float randf_cc()
@@ -172,4 +172,9 @@ extern "C" float randf_co()
 extern "C" float randf_oo()
 {
   return (static_cast<float>(rand_u32())+0.5f)/(UINT32_MAX+1.0f);
+}
+
+extern "C" uint64_t rand_u64()
+{
+  return rand_u32() | rand_u32()<<31;
 }

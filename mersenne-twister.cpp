@@ -9,10 +9,15 @@
  * For instance, it would be perfect for Monte Carlo simulations,
  * etc.
  *
- * Written by Christian Stigen Larsen
- * 2012-01-11 -- http://csl.sublevel3.org
+ * For all the details on this algorithm, see the original paper:
+ * http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/mt.pdf
  *
+ * Written by Christian Stigen Larsen
+ * http://csl.sublevel3.org
+ * 
  * Distributed under the modified BSD license.
+ *
+ * 2012-01-11
  */
 
 #include <stdio.h>
@@ -73,12 +78,9 @@ static inline void generate_numbers()
 extern "C" void initialize(uint32_t seed)
 {
   /*
-   * In the loop below, the mask 0xFFFFFFFF is just a guard for
-   * larger than 32-bit word sizes.
-   *
-   * The equation is a linear congruential generator (LCG), one of
-   * the oldest known pseudo-random number generator algorithms,
-   * in the form X_(n+1) = = (a*X_n + c) (mod m).
+   * The equation below is a linear congruential generator (LCG),
+   * one of the oldest known pseudo-random number generator
+   * algorithms, in the form X_(n+1) = = (a*X_n + c) (mod m).
    *
    * We've implicitly got m=32 (mask + word size of 32 bits), so
    * there is no need to explicitly use modulus.
@@ -103,15 +105,14 @@ extern "C" void initialize(uint32_t seed)
    * "A common Mersenne twister implementation, interestingly
    * enough, uses an LCG to generate seed data.",
    *
-   * If MT is an array with 32-bit data types, you can skip the
-   * 0xFFFFFFFF below (but let's keep it, so we can easily change
-   * the array, in case we want to implement a 64-bit MT).
+   * Since our we're using 32-bits data types for our MT array,
+   * we can skip the masking with 0xFFFFFFFF below.
    */
 
   MT[0] = seed;
 
   for ( register unsigned i=1; i<SIZE; ++i )
-    MT[i] = 0xFFFFFFFF & (0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i);
+    MT[i] = 0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i;
 }
 
 extern "C" uint32_t rand_u32()

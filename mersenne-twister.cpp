@@ -49,27 +49,25 @@ static inline void generate_numbers()
    * http://www.quadibloc.com/crypto/co4814.htm
    *
    */
-  register uint32_t y;
-  register unsigned i;
+
+  static const uint32_t MATRIX[2] = {0, 0x9908b0df};
+  register uint32_t y, i;
 
   // i = [0 ... 226]
   for ( i=0; i<DIFF; ++i ) {
     y = M32(MT[i]) | L31(MT[i+1]);
-    MT[i] = MT[i + PERIOD] ^ (y>>1);
-    if ( ODD(y) ) MT[i] ^= 0x9908b0df;
+    MT[i] = MT[i + PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
   }
 
   // i = [227 ... 622]
   for ( i=DIFF; i<(SIZE-1); ++i ) {
     y = M32(MT[i]) | L31(MT[i+1]);
-    MT[i] = MT[i-DIFF] ^ (y>>1);
-    if ( ODD(y) ) MT[i] ^= 0x9908b0df;
+    MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)];
   }
 
   // i = [623]
   y = M32(MT[SIZE-1]) | L31(MT[SIZE]);
-  MT[SIZE-1] = MT[PERIOD-1] ^ (y>>1);
-  if ( ODD(y) ) MT[SIZE-1] ^= 0x9908b0df;
+  MT[SIZE-1] = MT[PERIOD-1] ^ (y>>1) ^ MATRIX[ODD(y)];
 }
 
 extern "C" void initialize(uint32_t seed)

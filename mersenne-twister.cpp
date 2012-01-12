@@ -33,8 +33,8 @@ static unsigned index = 0;
 static inline void generate_numbers()
 {
   /*
-   * Originally, we had one loop with i going from [0, SIZE) and two
-   * modulues operations:
+   * Originally, we had one loop with i going from [0, SIZE) and
+   * two modulus operations:
    *
    * for ( register unsigned i=0; i<SIZE; ++i ) {
    *   register uint32_t y = M32(MT[i]) | L31(MT[(i+1) % SIZE]);
@@ -100,12 +100,12 @@ extern "C" void initialize(uint32_t seed)
    * http://en.wikipedia.org/wiki/Linear_congruential_generator
    *
    * From that page, it says:
-   *
    * "A common Mersenne twister implementation, interestingly
    * enough, uses an LCG to generate seed data.",
    *
-   * and here you have it:
-   *
+   * If MT is an array with 32-bit data types, you can skip the
+   * 0xFFFFFFFF below (but let's keep it, so we can easily change
+   * the array, in case we want to implement a 64-bit MT).
    */
 
   MT[0] = seed;

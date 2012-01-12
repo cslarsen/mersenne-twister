@@ -141,12 +141,16 @@ extern "C" int rand()
    * rand_u32() uses all 32-bits for the pseudo-random number,
    * but rand() must return a number from 0 ... RAND_MAX.
    *
-   * We'll just assume that (1) rand() only uses 31-bits worth of data, and
-   * that (2) we're on a two's complement system.  Therefore we'll just chop
-   * off the M32 from rand_u32().
+   * We'll just assume that rand() only uses 31 bits worth of
+   * data, and that we're on a two's complement system.  
+   *
+   * So, to output an integer compatible with rand(), we have
+   * two options: Either mask off the highest (32nd) bit, or
+   * shift right by one bit.  Masking with 0x7FFFFFFF will be
+   * compatible with 64-bit MT[], so we'll just use that here.
    *
    */
-  return 0x7FFFFFFF & rand_u32();
+  return static_cast<int>(0x7FFFFFFF & rand_u32());
 }
 
 extern "C" void srand(unsigned seed)

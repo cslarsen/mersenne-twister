@@ -56,7 +56,7 @@ static inline void generate_numbers()
   // i = [0 ... 226]
   for ( i=0; i<DIFF; ++i ) {
     y = M32(MT[i]) | L31(MT[i+1]);
-    MT[i] = MT[i + PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
+    MT[i] = MT[i+PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
   }
 
   // i = [227 ... 622]

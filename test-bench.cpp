@@ -109,7 +109,7 @@ int main()
 
   double speed = calls_per_second();
   uint64_t dim = dimension(speed)-1;
-  printf("%.1lf %s / second\n", speed/pow10(dim), unit(dim));
+  printf("ca. %.1lf %s / second\n", speed/pow10(dim), unit(dim));
 
   // Multiply up an amount and benchmark again
   uint64_t count = 20.0*speed;

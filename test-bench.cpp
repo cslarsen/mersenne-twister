@@ -1,18 +1,14 @@
 /* 
  * The Mersenne Twister pseudo-random number generator (PRNG)
  *
- * This is an implementation of fast PRNG called MT19937,
- * meaning it has a period of 2^19937-1, which is a Mersenne
- * prime.
- *
- * This PRNG is fast and suitable for non-cryptographic code.
- * For instance, it would be perfect for Monte Carlo simulations,
- * etc.
+ * NOTE:  This program only gives you a general idea of PRNG
+ *        performance.  It is NOT a scientific benchmark.
  *
  * Written by Christian Stigen Larsen
- * 2012-01-11 -- http://csl.sublevel3.org
+ * http://csl.sublevel3.org
  *
  * Distributed under the modified BSD license.
+ *
  */
 
 #include <stdio.h>
@@ -71,8 +67,7 @@ uint32_t dimension(uint64_t n)
 
 uint64_t pow10(uint32_t n)
 {
-  // nearest clear cut unit
-  n = 3*(n/3);
+  n = 3*(n/3); // nearest clear cut unit
   uint64_t r = 1;
 
   while ( n-- )

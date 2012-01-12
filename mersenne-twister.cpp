@@ -87,9 +87,14 @@ extern "C" void initialize(uint32_t seed)
    * below is 0x6c07865 --- 1812433253 in decimal, and is called
    * the Borosh-Niederreiter multiplier for modulus 2^32.
    *
-   * It is mentioned in Knuth's The Art of Computer Programming,
-   * volume 2, page 106, table 1, line 13.  LCGs are treated in
-   * the same book on pages 10-26.
+   * It is mentioned in passing in Knuth's THE ART OF COMPUTER
+   * PROGRAMMING, Volume 2, page 106, Table 1, line 13.  LCGs are
+   * treated in the same book, pp. 10-26
+   *
+   * You can read the original paper by Borosh and Niederreiter
+   * as well.  It's called OPTIMAL MULTIPLIERS FOR PSEUDO-RANDOM
+   * NUMBER GENERATION BY THE LINEAR CONGRUENTIAL METHOD (1983) at
+   * http://www.springerlink.com/content/n7765ku70w8857l7/
    *
    * You can read about LCGs at:
    * http://en.wikipedia.org/wiki/Linear_congruential_generator

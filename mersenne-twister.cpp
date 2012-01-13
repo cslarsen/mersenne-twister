@@ -62,12 +62,40 @@ static inline void generate_numbers()
   for ( i=0; i<DIFF; ++i ) {
     y = M32(MT[i]) | L31(MT[i+1]);
     MT[i] = MT[i+PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
+
+    /*
+     * We're doing 226 = 113*2, an even number of steps, so we can
+     * safely unroll one more step here for speed:
+     */
+
+    ++i;
+    y = M32(MT[i]) | L31(MT[i+1]);
+    MT[i] = MT[i+PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
   }
 
   // i = [227 ... 622]
   for ( i=DIFF; i<(SIZE-1); ++i ) {
     y = M32(MT[i]) | L31(MT[i+1]);
     MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)];
+
+    /*
+     * 623-227 = 396 = 99*4, so we can do FOUR steps
+     * in this loop.  (It's interesting that gcc doesn't
+     * do this automatically).
+     */
+
+    ++i;
+    y = M32(MT[i]) | L31(MT[i+1]);
+    MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)];
+
+    ++i;
+    y = M32(MT[i]) | L31(MT[i+1]);
+    MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)];
+
+    ++i;
+    y = M32(MT[i]) | L31(MT[i+1]);
+    MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)];
+
   }
 
   // i = [623]

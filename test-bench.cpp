@@ -13,25 +13,17 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <sys/time.h>
 #include <sys/resource.h>
-#include "mersenne-twister.h"
+#include <math.h>
+#include <vector>
 
-static struct timeval mark;
+namespace mt {
+  // In case we've got stdint's RAND_MAX, unset it
+  #undef RAND_MAX
+  #include "mersenne-twister.h"
+};
 
-void start_timer()
-{
-  gettimeofday(&mark, NULL);
-}
-
-double elapsed_secs()
-{
-  struct timeval stop;
-  gettimeofday(&stop, NULL);
-
-  return (stop.tv_sec - mark.tv_sec)
-      + (stop.tv_usec - mark.tv_usec)/1000000.0;
-}
+static double mark;
 
 double rusage_self()
 {
@@ -40,13 +32,23 @@ double rusage_self()
   return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
 }
 
-double calls_per_second(double run_secs = 1.0)
+void mark_time()
+{
+  mark = rusage_self();
+}
+
+double elapsed_secs()
+{
+  return rusage_self() - mark;
+}
+
+double estimate_calls_per_second(double run_secs = 1.0)
 {
   uint64_t count = 0;
-  start_timer();
+  mark_time();
 
   while ( count < 10000000 ) {
-    rand_u32();
+    mt::rand_u32();
 
     if ( (++count % 10000) == 0 ) {
       if ( elapsed_secs() >= run_secs )
@@ -55,16 +57,6 @@ double calls_per_second(double run_secs = 1.0)
   }
 
   return count / elapsed_secs();
-}
-
-double benchmark(const uint64_t count)
-{
-  start_timer();
-
-  for ( uint64_t n = 0; n < count; ++n )
-    rand_u32();
-
-  return elapsed_secs();
 }
 
 uint32_t dimension(uint64_t n)
@@ -108,40 +100,94 @@ const char* unit(uint32_t dimension)
   return units[dimension];
 }
 
+double numbers_per_second(const uint64_t count)
+{
+  printf("Generating %.1lf %s numbers... ",
+    (double)count/pow10(dimension(count)-1),
+    unit(dimension(count)-1));
+  fflush(stdout);
+
+  mark_time();
+
+  for ( uint64_t n = 0; n < count; ++n )
+    mt::rand_u32();
+
+  double secs = elapsed_secs();
+  printf("%f seconds\n", secs);
+
+  return count/secs;
+}
+
+double mean(const std::vector<double>& v)
+{
+  double sum = 0;
+
+  for ( size_t n=0; n<v.size(); ++n )
+    sum += v[n];
+
+  return sum/v.size();
+}
+
+double stddev(const std::vector<double>& v)
+{
+  double m = mean(v);
+  double sumsq = 0;
+
+  for ( size_t n=0; n<v.size(); ++n )
+    sumsq += (v[n] - m) * (v[n] - m);
+
+  return sqrt(sumsq/v.size());
+}
+
 int main()
 {
   printf("Mersenne Twister MT19937 non-rigorous benchmarking\n");
   printf("\n");
 
-  seed(5769);
+  mt::seed(5769);
 
   // Find out how many numbers we expect to generate per second
   printf("Priming system performance... ");
   fflush(stdout);
 
-  double speed = calls_per_second();
+  double speed = estimate_calls_per_second();
   uint64_t dim = dimension(speed);
-  printf("ca. %.1lf %s / second\n", speed/pow10(dim), unit(dim));
+  printf("ca. %.1lf %s / second\n\n", speed/pow10(dim), unit(dim));
 
-  // Multiply up an amount and benchmark again
-  uint64_t count = 10.0*speed;
-  dim = dimension(count);
+  // Multiply up an amount and benchmark again in batches
+  uint64_t part = 40;
+  uint64_t count = part*speed;
 
-  printf("Generating %.1lf %s numbers... ",
-    (double)count/pow10(dim-1), unit(dim-1));
-  fflush(stdout);
+  printf("Will generate %Lu batches of numbers\n", part);
+  printf("Using getrusage(), i.e., not wall-clock time\n");
+  printf("\n");
 
-  double secs = benchmark(count);
-  printf("%.2lf seconds\n\n", secs);
+  std::vector<double> persec;
 
-  dim = dimension(count);
-  printf("This equals %.3lf %s pseudo-random numbers / second\n\n",
-    (count/secs)/pow10(dim), unit(dim));
+  // smaller batches
+  for ( uint64_t n=0; n<part-30; ++n )
+    persec.push_back(numbers_per_second(count/(2*part)));
 
-  secs = rusage_self();
-  printf("rusage reports %.2lf seconds\n", secs);
-  printf("This equals %.3lf %s pseudo-random / second\n\n",
-    (count/secs)/pow10(dim), unit(dim));
+  // normal batches
+  for ( uint64_t n=0; n<part-30; ++n )
+    persec.push_back(numbers_per_second(count/part));
+
+  // bigger batches
+  for ( uint64_t n=0; n<10; ++n )
+    persec.push_back(numbers_per_second(2*count/part));
+
+  dim = dimension(mean(persec));
+  dim -= 1;
+
+  double spd = mean(persec)/pow10(dim);
+  double dev = stddev(persec);
+
+  printf("\nRESULTS\n");
+  printf("Mean performance: %.1lf %s pseudo-random numbers / second\n",
+    spd, unit(dim));
+
+  printf("Standard deviation: %.3lf\n", dev);
+  printf("\n");
 
   return 0;
 }

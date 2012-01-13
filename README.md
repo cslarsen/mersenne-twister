@@ -40,6 +40,16 @@ but I'm not sure if it will affect performance.
 operations and used better data types for indices.  This is still a very
 simple optimization trick, but the code now runs twice as fast.
 
+**EDIT 2** Ok, so I couldn't resist and have done another optimization
+trick.  On my Intel i7 laptop it generates about 203 million numbers per
+second.  On _my_ computer, this is the speed measurement:
+
+http://www.wolframalpha.com/input/?i=normal+distribution+mean+203700000+standard+deviation+3226951.557
+
+On _my_ computer it runs faster than the reference implementation and all
+other non-SIMD Mersenne Twisters I've tested.  But that's on _my_ system.
+Your mileage may wary. :)
+
 Portability
 -----------
 

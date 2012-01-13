@@ -127,7 +127,7 @@ int main()
   printf("%.2lf seconds\n\n", secs);
 
   dim = dimension(count);
-  printf("This equals %.2lf %s pseudo-random numbers / second\n\n",
+  printf("This equals %.3lf %s pseudo-random numbers / second\n\n",
     (count/secs)/pow10(dim), unit(dim));
 
   return 0;

@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 #include "mersenne-twister.h"
 
 static struct timeval mark;
@@ -30,6 +31,13 @@ double elapsed_secs()
 
   return (stop.tv_sec - mark.tv_sec)
       + (stop.tv_usec - mark.tv_usec)/1000000.0;
+}
+
+double rusage_self()
+{
+  struct rusage ru;
+  getrusage(RUSAGE_SELF, &ru);
+  return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
 }
 
 double calls_per_second(double run_secs = 1.0)
@@ -128,6 +136,11 @@ int main()
 
   dim = dimension(count);
   printf("This equals %.3lf %s pseudo-random numbers / second\n\n",
+    (count/secs)/pow10(dim), unit(dim));
+
+  secs = rusage_self();
+  printf("rusage reports %.2lf seconds\n", secs);
+  printf("This equals %.3lf %s pseudo-random / second\n\n",
     (count/secs)/pow10(dim), unit(dim));
 
   return 0;

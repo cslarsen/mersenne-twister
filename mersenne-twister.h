@@ -19,7 +19,14 @@
  * Distributed under the modified BSD license.
  */
 
+#ifndef MERSENNE_TWISTER_H
+#define MERSENNE_TWISTER_H
+
 #include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * Maximum number you can get from rand().
@@ -30,43 +37,49 @@
  * Initialize the number generator with given seed.
  * (LIBC REPLACEMENT FUNCTION)
  */
-extern "C" void srand(unsigned seed_value);
+void srand(unsigned seed_value);
 
 /*
  * Extract a pseudo-random integer in the range 0 ... RAND_MAX.
  * (LIBC REPLACEMENT FUNCTION)
  */
-extern "C" int rand();
+int rand();
 
 /*
  * Extract a pseudo-random unsigned 32-bit integer in the range 0 ... UINT32_MAX
  */
-extern "C" uint32_t rand_u32();
+uint32_t rand_u32();
 
 /*
  * Combine two unsigned 32-bit pseudo-random numbers into one 64-bit
  */
-extern "C" uint64_t rand_u64();
+uint64_t rand_u64();
 
 /*
  * Initialize Mersenne Twister with given seed value.
  */
-extern "C" void seed(uint32_t seed_value);
+void seed(uint32_t seed_value);
 
 /*
  * Return a random float in the CLOSED range [0, 1]
  * Mnemonic: randf_co = random float 0=closed 1=closed
  */
-extern "C" float randf_cc();
+float randf_cc();
 
 /*
  * Return a random float in the OPEN range [0, 1>
  * Mnemonic: randf_co = random float 0=closed 1=open
  */
-extern "C" float randf_co();
+float randf_co();
 
 /*
  * Return a random float in the OPEN range <0, 1>
  * Mnemonic: randf_oo = random float 0=open 1=open
  */
-extern "C" float randf_oo();
+float randf_oo();
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif // MERSENNE_TWISTER_H

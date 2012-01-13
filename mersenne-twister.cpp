@@ -24,6 +24,11 @@
 #include <stdint.h>
 #include "mersenne-twister.h"
 
+/*
+ * We have an array of 624 32-bit values, and there are
+ * 31 unused bits, so we have a seed value of
+ * 624*32-31 = 19937 bits.
+ */
 static const unsigned SIZE   = 624;
 static const unsigned PERIOD = 397;
 static const unsigned DIFF   = SIZE-PERIOD;

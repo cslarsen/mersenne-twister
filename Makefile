@@ -1,5 +1,5 @@
 TARGETS = mersenne-twister.o test-mt test-bench
-CXXFLAGS = -W -Wall -O3
+CXXFLAGS = -W -Wall -O3 -fomit-frame-pointer
 
 all: $(TARGETS)
 

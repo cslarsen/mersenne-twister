@@ -161,7 +161,7 @@ int main()
   uint64_t part = 40;
   uint64_t count = part*speed;
 
-  printf("Will generate %Lu batches of numbers\n", part);
+  printf("Will generate %llu batches of numbers\n", part);
   printf("Using getrusage(), i.e., not wall-clock time\n");
   printf("\n");
 

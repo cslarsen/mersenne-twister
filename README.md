@@ -1,5 +1,5 @@
-A Mersenne Twister in C++
-=========================
+A _fast_ Mersenne Twister in C++
+================================
 
 This is an implementation of the fast pseudo-random number generator (PRNG)
 **MT19937**, colloquially called the _Mersenne Twister_.  It was given this
@@ -44,7 +44,7 @@ simple optimization trick, but the code now runs twice as fast.
 trick.  On my Intel i7 laptop it generates about 203 million numbers per
 second.  On _my_ computer, this is the speed measurement:
 
-http://www.wolframalpha.com/input/?i=normal+distribution+mean+203700000+standard+deviation+3226951.557
+http://www.wolframalpha.com/input/?i=normal+distribution+mean+204096500+standard+deviation+563153.8
 
 On _my_ computer it runs faster than the reference implementation and all
 other non-SIMD Mersenne Twisters I've tested.  But that's on _my_ system.

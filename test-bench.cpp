@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <float.h>
 #include <sys/resource.h>
 #include <math.h>
 #include <vector>
@@ -42,6 +43,52 @@ double elapsed_secs()
   return rusage_self() - mark;
 }
 
+/*
+ * Number of digits in number.
+ */
+int digits(double n)
+{
+  int d = 1;
+  n = floor(n);
+
+  while ( (n/=10) >= 1.0 )
+    ++d;
+
+  return d;
+}
+
+/*
+ * Convert number to human readable string, i.e.
+ *
+ *   - 12345 ==> 12.3 thousand
+ *   - 1234567 ==> 1.2 million
+ *   - etc.
+ *
+ * using the SHORT SCALE format (i.e., English
+ * variants such as "billion" = 10^9, instead of
+ * "milliard".
+ */
+const char* sscale(double n, int decimals = 1)
+{
+  static char s[32];
+  static const char* name[] = {
+    "",
+    "thousand",
+    "million",
+    "billion",
+    "trillion",
+    "quadrillion",
+    "quintillion",
+    "sextillion",
+    "septillion"
+  };
+
+  int exp = digits(n) <= 4? 0 : 3*((digits(n)-1)/3);
+  sprintf(s, "%1.*lf %s", decimals, n/pow(10, exp), name[exp/3]);
+
+  return s;
+}
+
 double estimate_calls_per_second(double run_secs = 1.0)
 {
   uint64_t count = 0;
@@ -59,52 +106,9 @@ double estimate_calls_per_second(double run_secs = 1.0)
   return count / elapsed_secs();
 }
 
-uint32_t dimension(uint64_t n)
-{
-  uint32_t d = 0;
-
-  while ( n )
-    n /= 10, ++d;
-
-  return d;
-}
-
-uint64_t pow10(uint32_t n)
-{
-  n = 3*(n/3); // nearest clear cut unit
-  uint64_t r = 1;
-
-  while ( n-- )
-    r *= 10;
-
-  return r;
-}
-
-const char* unit(uint32_t dimension)
-{
-  static const char* units[] = {
-    "",
-    "thousand",
-    "million",
-    "billion",
-    "trillion",
-    "quadrillion",
-    "quintillion"
-  };
-
-  dimension /= 3;
-
-  if ( dimension > sizeof(units)/sizeof(char*) )
-    return "kabillion";
-
-  return units[dimension];
-}
-
 double numbers_per_second(const uint64_t count)
 {
-  printf("Generating %.1lf %s numbers... ",
-    (double)count/pow10(dimension(count)-1),
-    unit(dimension(count)-1));
+  printf("Generating %s numbers... ", sscale(count));
   fflush(stdout);
 
   mark_time();
@@ -151,8 +155,7 @@ int main()
   fflush(stdout);
 
   double speed = estimate_calls_per_second();
-  uint64_t dim = dimension(speed);
-  printf("ca. %.1lf %s / second\n\n", speed/pow10(dim), unit(dim));
+  printf("ca. %s / second\n\n", sscale(speed, 2));
 
   // Multiply up an amount and benchmark again in batches
   uint64_t part = 40;
@@ -176,18 +179,15 @@ int main()
   for ( uint64_t n=0; n<10; ++n )
     persec.push_back(numbers_per_second(2*count/part));
 
-  dim = dimension(mean(persec));
-  dim -= 1;
-
-  double spd = mean(persec)/pow10(dim);
-  double dev = stddev(persec);
-
-  printf("\nRESULTS\n");
-  printf("Mean performance: %.1lf %s pseudo-random numbers / second\n",
-    spd, unit(dim));
-
-  printf("Standard deviation: %.3lf\n", dev);
   printf("\n");
+  printf("RESULTS\n");
+  printf("\n");
+  printf("  Mean performance: %s numbers/second\n", sscale(mean(persec), 4));
+  printf("  Standard deviation: %s\n", sscale(stddev(persec), 4));
+  printf("\n"
+         "Note that while mean is quite consistent between runs, standard\n"
+         "deviation may not.  Also be sure to compile at maximum optimization\n"
+         "levels, using your native instruction set.\n\n");
 
   return 0;
 }

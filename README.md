@@ -73,6 +73,8 @@ To build the example, just type
 
 which should produce the following output:
 
+    $ make check
+    ./test-mt
     Mersenne Twister -- printing the first 200 numbers seed 1
     
     1791095845  4282876139  3093770124  4005303368      491263 
@@ -118,15 +120,15 @@ which should produce the following output:
     
     Generating 64-bit pseudo-random numbers
     
-     3012767458657393270  4861252995939981590  8171373547965632397
-     3295231920207293042  8379757656234809013  5749482273722797066
-      145925191528956087  8572545398272020024  6372399325395526037
-     9198679701087902816  1589560648737759187  1264854042067457521
-     8601674933172701325  6427013158495133300   608744156293566086
-     6967916787276743352  6953280600449268623  8513398738853508091
-     6562657546016137666  1146197319580544821   183361855752030628
-      241753687246785272   261081280177958184  2270896297431369947
-     7932357750702041457  4969839388718826957  5098882734407357902
+     6025534914829572726  9722505991841274134 16342747097180917645
+     6590463838393199218 16759515313480685237 11498964545438157834
+      291850381902561463 17145090797266914872 12744798652718096789
+    18397359401874807904  3179121295446253523  2529708085239731697
+    17203349865520957581 12854026314996063860  1217488311597731462
+    13935833576665547448 13906561200002743183 17026797477495256059
+    13125315094098747842  2292394638421159733   366723709801908644
+      483507374032440056   522162562461265192  4541792594424072411
+    15864715500164049265  9939678776442258893 10197765464658613710
     
     Float values in range [0..1]
     
@@ -144,10 +146,50 @@ which should produce the following output:
     ./test-bench
     Mersenne Twister MT19937 non-rigorous benchmarking
     
-    Priming system performance... ca. 0.1 billion / second
-    Generating 1.4 billion numbers... 7.99 seconds
+    Priming system performance... ca. 160.22 million / second
     
-    This equals 0.18 billion pseudo-random numbers / second
+    Will generate 40 batches of numbers
+    Using getrusage(), i.e., not wall-clock time
+    
+    Generating 80.1 million numbers... 0.395346 seconds
+    Generating 80.1 million numbers... 0.392110 seconds
+    Generating 80.1 million numbers... 0.392522 seconds
+    Generating 80.1 million numbers... 0.391819 seconds
+    Generating 80.1 million numbers... 0.391702 seconds
+    Generating 80.1 million numbers... 0.392898 seconds
+    Generating 80.1 million numbers... 0.392181 seconds
+    Generating 80.1 million numbers... 0.392310 seconds
+    Generating 80.1 million numbers... 0.391601 seconds
+    Generating 80.1 million numbers... 0.392534 seconds
+    Generating 160.2 million numbers... 0.783833 seconds
+    Generating 160.2 million numbers... 0.783436 seconds
+    Generating 160.2 million numbers... 0.783116 seconds
+    Generating 160.2 million numbers... 0.784970 seconds
+    Generating 160.2 million numbers... 0.783493 seconds
+    Generating 160.2 million numbers... 0.783300 seconds
+    Generating 160.2 million numbers... 0.783211 seconds
+    Generating 160.2 million numbers... 0.783087 seconds
+    Generating 160.2 million numbers... 0.782630 seconds
+    Generating 160.2 million numbers... 0.784145 seconds
+    Generating 320.4 million numbers... 1.565591 seconds
+    Generating 320.4 million numbers... 1.565431 seconds
+    Generating 320.4 million numbers... 1.573949 seconds
+    Generating 320.4 million numbers... 1.573723 seconds
+    Generating 320.4 million numbers... 1.581111 seconds
+    Generating 320.4 million numbers... 1.575230 seconds
+    Generating 320.4 million numbers... 1.569613 seconds
+    Generating 320.4 million numbers... 1.575157 seconds
+    Generating 320.4 million numbers... 1.575193 seconds
+    Generating 320.4 million numbers... 1.574692 seconds
+    
+    RESULTS
+    
+      Mean performance: 204.0965 million numbers/second
+      Standard deviation: 563.1538 thousand
+    
+    Note that while mean is quite consistent between runs, standard
+    deviation may not.  Also be sure to compile at maximum optimization
+    levels, using your native instruction set.
 
 It makes a quick check that the first 200 numbers with seed = 1 are
 correct.

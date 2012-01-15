@@ -11,7 +11,7 @@ only needs to observe 624 iterates to predict all future ones.  It was
 designed with statistical simulations in mind, and should therefore be quite
 good for Monte Carlo simulations, probabilistic algorithms and so on.
 
-You can read more about it on about the [Mersenne Twister on Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister).
+You can read more about the [Mersenne Twister on Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister).
 
 Drop-in replacement for libc's srand() and rand()
 -------------------------------------------------
@@ -29,7 +29,7 @@ I originally wanted to create a simple implementation of MT19937 with clean
 and readable source code.  But I couldn't resist doing some optimizations,
 so unfortunately the code is a bit muddled now.
 
-_This implementation is very fast_.  On _my_ computer, at least, it runs
+This implementation is *very fast*.  On _my_ computer, at least, it runs
 faster than the reference implementation in the original paper.  Most
 other non-SIMD Mersenne Twisters are directly based on this code, so I
 consider this to be a fast implementation.  But, your mileage may wary.
@@ -52,20 +52,25 @@ So, a small speed boost.
 The test code reports mean and standard deviation for your system.  Here is
 an example run from mine:
 
-http://www.wolframalpha.com/input/?i=normal+distribution+mean+204096500+standard+deviation+563153.8
+[http://www.wolframalpha.com/...](http://www.wolframalpha.com/input/?i=normal+distribution+mean+207283382.666440+standard+deviation+1671408.324083)
+
+Finally, note that people have done SIMD and CUDA implementations.  If
+you are looking for even more speed, I suggest you check them out.
 
 Portability
 -----------
 
+The code should be portable.
+
 The MT19937 algorithm is inherently 32-bit, but works nicely on 64-bit
 systems.  
 
-While it uses the all 32 bits to express pseudo-random numbers, rand() does
-not --- by design it will only return numbers in the range 0 ... INT32_MAX,
+While it uses the all 32 bits to express pseudo-random numbers, `rand()` does
+not.  By design it will only return numbers in the range `0 ... INT32_MAX`,
 effectively using only 31 bits of randomness.  This is a well known point of
 criticism for rand().
 
-To implement rand() with rand_u32(), I just chop off the MSB.  This assumes
+To implement `rand()` with `rand_u32()`, I just chop off the MSB.  This assumes
 that the compiler is using two's complement for encoding negative numbers.
 
 Compilation and usage

@@ -206,7 +206,7 @@ correct, then produces some 64-bit and float values.
 The last bit performs a simple benchmarking and lets you plot the
 performance with R.  For the run above on:
 
-![Mersenne Twister performance graph](plot-numpersec.png)
+![Mersenne Twister performance graph](https://github.com/cslarsen/mersenne-twister/raw/master/plot-numpersec.png)
 
 Bugs
 ----

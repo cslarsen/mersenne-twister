@@ -146,53 +146,67 @@ which should produce the following output:
     ./test-bench
     Mersenne Twister MT19937 non-rigorous benchmarking
     
-    Priming system performance... ca. 160.22 million / second
+    Priming system performance... ca. 157.39 million / second
     
     Will generate 40 batches of numbers
     Using getrusage(), i.e., not wall-clock time
     
-    Generating 80.1 million numbers... 0.395346 seconds
-    Generating 80.1 million numbers... 0.392110 seconds
-    Generating 80.1 million numbers... 0.392522 seconds
-    Generating 80.1 million numbers... 0.391819 seconds
-    Generating 80.1 million numbers... 0.391702 seconds
-    Generating 80.1 million numbers... 0.392898 seconds
-    Generating 80.1 million numbers... 0.392181 seconds
-    Generating 80.1 million numbers... 0.392310 seconds
-    Generating 80.1 million numbers... 0.391601 seconds
-    Generating 80.1 million numbers... 0.392534 seconds
-    Generating 160.2 million numbers... 0.783833 seconds
-    Generating 160.2 million numbers... 0.783436 seconds
-    Generating 160.2 million numbers... 0.783116 seconds
-    Generating 160.2 million numbers... 0.784970 seconds
-    Generating 160.2 million numbers... 0.783493 seconds
-    Generating 160.2 million numbers... 0.783300 seconds
-    Generating 160.2 million numbers... 0.783211 seconds
-    Generating 160.2 million numbers... 0.783087 seconds
-    Generating 160.2 million numbers... 0.782630 seconds
-    Generating 160.2 million numbers... 0.784145 seconds
-    Generating 320.4 million numbers... 1.565591 seconds
-    Generating 320.4 million numbers... 1.565431 seconds
-    Generating 320.4 million numbers... 1.573949 seconds
-    Generating 320.4 million numbers... 1.573723 seconds
-    Generating 320.4 million numbers... 1.581111 seconds
-    Generating 320.4 million numbers... 1.575230 seconds
-    Generating 320.4 million numbers... 1.569613 seconds
-    Generating 320.4 million numbers... 1.575157 seconds
-    Generating 320.4 million numbers... 1.575193 seconds
-    Generating 320.4 million numbers... 1.574692 seconds
+    Generating 78.7 million numbers... 0.378168 seconds
+    Generating 78.7 million numbers... 0.379396 seconds
+    Generating 78.7 million numbers... 0.378976 seconds
+    Generating 78.7 million numbers... 0.379467 seconds
+    Generating 78.7 million numbers... 0.379825 seconds
+    Generating 78.7 million numbers... 0.380530 seconds
+    Generating 78.7 million numbers... 0.378477 seconds
+    Generating 78.7 million numbers... 0.379181 seconds
+    Generating 78.7 million numbers... 0.382254 seconds
+    Generating 78.7 million numbers... 0.394970 seconds
+    Generating 157.4 million numbers... 0.762486 seconds
+    Generating 157.4 million numbers... 0.755937 seconds
+    Generating 157.4 million numbers... 0.755708 seconds
+    Generating 157.4 million numbers... 0.755189 seconds
+    Generating 157.4 million numbers... 0.756070 seconds
+    Generating 157.4 million numbers... 0.755928 seconds
+    Generating 157.4 million numbers... 0.755958 seconds
+    Generating 157.4 million numbers... 0.755801 seconds
+    Generating 157.4 million numbers... 0.759795 seconds
+    Generating 157.4 million numbers... 0.760088 seconds
+    Generating 314.8 million numbers... 1.524510 seconds
+    Generating 314.8 million numbers... 1.523943 seconds
+    Generating 314.8 million numbers... 1.521945 seconds
+    Generating 314.8 million numbers... 1.525202 seconds
+    Generating 314.8 million numbers... 1.510472 seconds
+    Generating 314.8 million numbers... 1.509650 seconds
+    Generating 314.8 million numbers... 1.511206 seconds
+    Generating 314.8 million numbers... 1.512368 seconds
+    Generating 314.8 million numbers... 1.509925 seconds
+    Generating 314.8 million numbers... 1.521888 seconds
     
     RESULTS
     
-      Mean performance: 204.0965 million numbers/second
-      Standard deviation: 563.1538 thousand
+      Mean performance: 207.2834 million numbers/second
+      Standard deviation: 1.6714 million
     
-    Note that while mean is quite consistent between runs, standard
-    deviation may not.  Also be sure to compile at maximum optimization
-    levels, using your native instruction set.
+    If we assume a normal distribution, you can plot the above with R:
+    
+      mean=207283382.666440;
+      sd=1671408.324083;
+      x=seq(mean-4*sd, mean+4*sd, length=200);
+      y=dnorm(x, mean=mean, sd=sd);
+      plot(x, y, type="l", xlab="Numbers / second", ylab="");
+      title("Mersenne Twister performance");
+    
+    Note that while the mean is quite consistent between runs, standard
+    deviation may not.  Be sure to compile at maximum optimization levels,
+    using your native instruction set.
 
 It makes a quick check that the first 200 numbers with seed = 1 are
-correct.
+correct, then produces some 64-bit and float values.
+
+The last bit performs a simple benchmarking and lets you plot the
+performance with R.  For the run above on:
+
+![Mersenne Twister performance graph](plot-numpersec.png)
 
 Bugs
 ----

@@ -65,45 +65,36 @@ static inline void generate_numbers()
 
   // i = [0 ... 226]
   for ( i=0; i<DIFF; ++i ) {
-    y = M32(MT[i]) | L31(MT[i+1]);
-    MT[i] = MT[i+PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
-
     /*
      * We're doing 226 = 113*2, an even number of steps, so we can
      * safely unroll one more step here for speed:
      */
+    y = M32(MT[i]) | L31(MT[i+1]);
+    MT[i] = MT[i+PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
 
     ++i;
     y = M32(MT[i]) | L31(MT[i+1]);
     MT[i] = MT[i+PERIOD] ^ (y>>1) ^ MATRIX[ODD(y)];
   }
 
-
   #define UNROLL \
-    ++i; \
     y = M32(MT[i]) | L31(MT[i+1]); \
-    MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)]
+    MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)]; \
+    ++i;
 
   // i = [227 ... 622]
-  for ( i=DIFF; i<(SIZE-1); ++i ) {
+  for ( i=DIFF; i<(SIZE-1); ) {
     /*
-     * 623-227 = 396 = 2*2*3*3*11, so we can unroll two, three,
-     * four, six, etc steps in this loop.  (Interestingely, gcc
-     * doesn't do this automaticallyl)
+     * 623-227 = 396 = 2*2*3*3*11, so we can unroll this loop in any
+     * number that evenly divides 396 (2, 4, 6, etc).
      */
-    y = M32(MT[i]) | L31(MT[i+1]);
-    MT[i] = MT[i-DIFF] ^ (y>>1) ^ MATRIX[ODD(y)];
 
-    UNROLL;
-    UNROLL;
-    UNROLL;
-    UNROLL;
-    UNROLL;
-    UNROLL;
-    UNROLL;
-    UNROLL;
-    UNROLL;
-    UNROLL;
+    // 11 times
+    UNROLL; UNROLL; UNROLL;
+    UNROLL; UNROLL; UNROLL;
+
+    UNROLL; UNROLL; UNROLL;
+    UNROLL; UNROLL;
   }
 
   // i = [623]

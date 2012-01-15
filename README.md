@@ -39,18 +39,19 @@ really test it out and decide for yourself.
 The original optimization trick I did was to unroll the loop in
 `generate_number()` three times to avoid the relatively expensive modulus
 operations.  The mod instructions were used to have the array index wrap
-around, but was alleviated with three loops and some simple arithmetic.
-Even though I noticed this myself, it is a well known trick.
+around, but was alleviated with the loops and some simple arithmetic.
+This is a well known trick.
 
 However, I tried unrolling each loop even more, since the loop counters can
-be factorized.  The idea was to fill the CPU's instruction pipeline and
-avoid flushing it.  This works fine on my Intel Core i7 computer, but it
-might not be the case for yours.
+be factorized.  The idea was to fill the CPU's [instruction pipeline](http://en.wikipedia.org/wiki/Instruction_pipeline) 
+and avoid flushing it.  It worked fine on my Intel Core i7 computer, and
+increased performance from around 186M numbers/sec to 204M numbers/sec. It
+may not work as well on other architectures, though.
 
-I added code for doing simple benchmarking, and on my computer it generates
-just over 200 million pseudo-random numbers per second.  The other
-implementations I tested performed around 180M/sec, which is not bad either.
-So, a small speed boost.
+I added code for doing simple benchmarking, and on my computer, the Mersenne
+Twister implementation generates numbers at a rate steadily over 200 million
+pseudo-random numbers per second.  The other implementations I tested
+performed around 180M numbers/second, which is not bad either.
 
 The test code reports mean and standard deviation for your system.  Here is
 an example run from mine:

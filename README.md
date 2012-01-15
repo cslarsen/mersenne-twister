@@ -38,8 +38,9 @@ really test it out and decide for yourself.
 
 The original optimization trick I did was to unroll the loop in
 `generate_number()` three times to avoid the relatively expensive modulus
-operations.  The mod instructions are used to have the index wrap around the
-array, and this is alleviated with three loops and simpe arithmetic.
+operations.  The mod instructions were used to have the array index wrap
+around, but was alleviated with three loops and some simple arithmetic.
+Even though I noticed this myself, it is a well known trick.
 
 However, I tried unrolling each loop even more, since the loop counters can
 be factorized.  The idea was to fill the CPU's instruction pipeline and

@@ -183,9 +183,19 @@ int main()
   printf("RESULTS\n");
   printf("\n");
   printf("  Mean performance: %s numbers/second\n", sscale(mean(persec), 4));
-  printf("  Standard deviation: %s\n", sscale(stddev(persec), 4));
-  printf("\n"
-         "Note that while the mean is quite consistent between runs, standard\n"
+  printf("  Standard deviation: %s\n\n", sscale(stddev(persec), 4));
+
+  printf("If we assume a normal distribution, you can plot the above with R:\n"
+         "\n"
+         "  mean=%f;\n"
+         "  sd=%f;\n"
+         "  x=seq(mean-4*sd, mean+4*sd, length=200);\n"
+         "  y=dnorm(x, mean=mean, sd=sd);\n"
+         "  plot(x, y, type=\"l\", xlab=\"Numbers / second\", ylab=\"\");\n"
+         "  title(\"Mersenne Twister performance\");\n"
+         "\n", mean(persec), stddev(persec));
+
+  printf("Note that while the mean is quite consistent between runs, standard\n"
          "deviation may not.  Be sure to compile at maximum optimization levels,\n"
          "using your native instruction set.\n\n");
 

@@ -185,9 +185,9 @@ int main()
   printf("  Mean performance: %s numbers/second\n", sscale(mean(persec), 4));
   printf("  Standard deviation: %s\n", sscale(stddev(persec), 4));
   printf("\n"
-         "Note that while mean is quite consistent between runs, standard\n"
-         "deviation may not.  Also be sure to compile at maximum optimization\n"
-         "levels, using your native instruction set.\n\n");
+         "Note that while the mean is quite consistent between runs, standard\n"
+         "deviation may not.  Be sure to compile at maximum optimization levels,\n"
+         "using your native instruction set.\n\n");
 
   return 0;
 }

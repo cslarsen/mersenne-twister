@@ -29,10 +29,12 @@ I originally wanted to create a simple implementation of MT19937 with clean
 and readable source code.  But I couldn't resist doing some optimizations,
 so unfortunately the code is a bit muddled now.
 
-This implementation is **very fast**.  On **my** computer, at least, it runs
-faster than the reference implementation in the original paper.  Most
-other non-SIMD Mersenne Twisters are directly based on this code, so I
-consider this to be a fast implementation.  But, your mileage may wary.
+This implementation is _very fast_.  It runs faster than the reference
+implementation in the original paper, at least on _my_ computer.  Most other
+_non-SIMD_ implementations are based on the reference code, so I consider this to be
+one of the faster ones.  However, performance measurement is difficult, and
+especially across various CPU architectures and systems, so you should
+really test it out and decide for yourself.
 
 The original optimization trick I did was to unroll the loop in
 `generate_number()` three times to avoid the relatively expensive modulus

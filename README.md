@@ -11,8 +11,7 @@ only needs to observe 624 iterates to predict all future ones.  It was
 designed with statistical simulations in mind, and should therefore be quite
 good for Monte Carlo simulations, probabilistic algorithms and so on.
 
-You can read more about it on the Wikipedia page at
-https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister
+You can read more about it on about the [Mersenne Twister on Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister).
 
 Drop-in replacement for libc's srand() and rand()
 -------------------------------------------------
@@ -26,29 +25,34 @@ You can even mix the two PRNGs by wrapping either of them in a namespaces.
 Performance
 -----------
 
-Regarding speed; I haven't optimized the code in any way.  My aim was to
-write a *clean* and *readable* implementation of the Mersenne Twister.
-Luckily, the resulting code is *fast enough*.  Indeed, in a simple benchmark
-I did on my system, the **unoptimized** code ran just as fast as the
-**optimized** version of rand() that came with the OS.
+I originally wanted to create a simple implementation of MT19937 with clean
+and readable source code.  But I couldn't resist doing some optimizations,
+so unfortunately the code is a bit muddled now.
 
-If you want to optimize the code, you can start by unrolling the loop in
-generate_numbers() to avoid all the modulus operations.  This is trivial,
-but I'm not sure if it will affect performance.
+_This implementation is very fast_.  On _my_ computer, at least, it runs
+faster than the reference implementation in the original paper.  Most
+other non-SIMD Mersenne Twisters are directly based on this code, so I
+consider this to be a fast implementation.  But, your mileage may wary.
 
-**EDIT** I've now unrolled the generate_numbers() loop to avoid modulus
-operations and used better data types for indices.  This is still a very
-simple optimization trick, but the code now runs twice as fast.
+The original optimization trick I did was to unroll the loop in
+`generate_number()` three times to avoid the relatively expensive modulus
+operations.  The mod instructions are used to have the index wrap around the
+array, and this is alleviated with three loops and simpe arithmetic.
 
-**EDIT 2** Ok, so I couldn't resist and have done another optimization
-trick.  On my Intel i7 laptop it generates about 203 million numbers per
-second.  On _my_ computer, this is the speed measurement:
+However, I tried unrolling each loop even more, since the loop counters can
+be factorized.  The idea was to fill the CPU's instruction pipeline and
+avoid flushing it.  This works fine on my Intel Core i7 computer, but it
+might not be the case for yours.
+
+I added code for doing simple benchmarking, and on my computer it generates
+just over 200 million pseudo-random numbers per second.  The other
+implementations I tested performed around 180M/sec, which is not bad either.
+So, a small speed boost.
+
+The test code reports mean and standard deviation for your system.  Here is
+an example run from mine:
 
 http://www.wolframalpha.com/input/?i=normal+distribution+mean+204096500+standard+deviation+563153.8
-
-On _my_ computer it runs faster than the reference implementation and all
-other non-SIMD Mersenne Twisters I've tested.  But that's on _my_ system.
-Your mileage may wary. :)
 
 Portability
 -----------
@@ -73,8 +77,6 @@ To build the example, just type
 
 which should produce the following output:
 
-    $ make check
-    ./test-mt
     Mersenne Twister -- printing the first 200 numbers seed 1
     
     1791095845  4282876139  3093770124  4005303368      491263 
@@ -215,7 +217,8 @@ Please report any bugs to the author.
 
 Author and license
 ------------------
-Written by Christian Stigen Larsen, http://csl.sublevel3.org
+
+Written by [Christian Stigen Larsen](http://csl.sublevel3.org)
 
 Distributed under the modified BSD license.
 
@@ -223,6 +226,7 @@ Distributed under the modified BSD license.
 
 References
 ----------
-The code is a translation of the MT19937 pseuco-code at 
-https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister
 
+* This code was originally a translation of the [MT19937 pseudo-code on
+Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister)
+* The [original Mersenne Twister paper](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/mt.pdf)

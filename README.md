@@ -1,5 +1,5 @@
-A _fast_ Mersenne Twister in C++
-================================
+A fast Mersenne Twister in C++
+==============================
 
 This is an implementation of the fast pseudo-random number generator (PRNG)
 **MT19937**, colloquially called the _Mersenne Twister_.  It was given this
@@ -29,7 +29,7 @@ I originally wanted to create a simple implementation of MT19937 with clean
 and readable source code.  But I couldn't resist doing some optimizations,
 so unfortunately the code is a bit muddled now.
 
-This implementation is *very fast*.  On _my_ computer, at least, it runs
+This implementation is **very fast**.  On **my** computer, at least, it runs
 faster than the reference implementation in the original paper.  Most
 other non-SIMD Mersenne Twisters are directly based on this code, so I
 consider this to be a fast implementation.  But, your mileage may wary.
@@ -52,7 +52,9 @@ So, a small speed boost.
 The test code reports mean and standard deviation for your system.  Here is
 an example run from mine:
 
-[http://www.wolframalpha.com/...](http://www.wolframalpha.com/input/?i=normal+distribution+mean+207283382.666440+standard+deviation+1671408.324083)
+![MT19937 performance probability distribution](https://github.com/cslarsen/mersenne-twister/raw/master/html/plot-numpersec-small.png)
+
+You can also view the [MT19937 performance on Wolfram|Alpha](http://www.wolframalpha.com/input/?i=normal+distribution+mean+207283382.666440+standard+deviation+1671408.324083)
 
 Finally, note that people have done SIMD and CUDA implementations.  If
 you are looking for even more speed, I suggest you check them out.
@@ -213,7 +215,7 @@ correct, then produces some 64-bit and float values.
 The last bit performs a simple benchmarking and lets you plot the
 performance with R.  For the run above on:
 
-![Mersenne Twister performance graph](https://github.com/cslarsen/mersenne-twister/raw/master/plot-numpersec.png)
+![Mersenne Twister performance graph](https://github.com/cslarsen/mersenne-twister/raw/master/html/plot-numpersec.png)
 
 Bugs
 ----

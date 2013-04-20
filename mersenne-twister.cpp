@@ -137,6 +137,7 @@ extern "C" void seed(uint32_t value)
    */
 
   MT[0] = value;
+  index = 0;
 
   for ( register unsigned i=1; i<SIZE; ++i )
     MT[i] = 0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i;

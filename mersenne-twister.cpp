@@ -98,7 +98,7 @@ static inline void generate_numbers()
   }
 
   // i = [623]
-  y = M32(MT[SIZE-1]) | L31(MT[SIZE]);
+  y = M32(MT[SIZE-1]) | L31(MT[SIZE-1]);
   MT[SIZE-1] = MT[PERIOD-1] ^ (y>>1) ^ MATRIX[ODD(y)];
 }
 

@@ -202,6 +202,21 @@ extern "C" float randf_oo()
   return (static_cast<float>(rand_u32())+0.5f)/(UINT32_MAX+1.0f);
 }
 
+extern "C" double randd_cc()
+{
+  return static_cast<double>(rand_u32())/UINT32_MAX;
+}
+
+extern "C" double randd_co()
+{
+  return static_cast<double>(rand_u32())/(UINT32_MAX+1.0);
+}
+
+extern "C" double randd_oo()
+{
+  return (static_cast<double>(rand_u32())+0.5)/(UINT32_MAX+1.0);
+}
+
 extern "C" uint64_t rand_u64()
 {
   return static_cast<uint64_t>(rand_u32())<<32 | rand_u32();

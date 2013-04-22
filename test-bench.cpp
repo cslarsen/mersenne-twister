@@ -9,6 +9,14 @@
  *
  * Distributed under the modified BSD license.
  *
+ * This small benchmarking program should be rewritten in the same way that
+ * Facebook did with Folly benchmarking:
+ *
+ *   https://github.com/facebook/folly/blob/master/folly/docs/Benchmark.md#a-look-under-the-hood
+ *
+ * It says that the running time "is not a random variable that fluctuates
+ * around an average".  One should simply take the best time in each run.
+ *
  */
 
 #include <stdio.h>

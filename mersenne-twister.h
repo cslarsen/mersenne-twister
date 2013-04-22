@@ -78,6 +78,24 @@ float randf_co();
  */
 float randf_oo();
 
+/*
+ * Return a random double in the CLOSED range [0, 1]
+ * Mnemonic: randd_co = random double 0=closed 1=closed
+ */
+double randd_cc();
+
+/*
+ * Return a random double in the OPEN range [0, 1>
+ * Mnemonic: randd_co = random double 0=closed 1=open
+ */
+double randd_co();
+
+/*
+ * Return a random double in the OPEN range <0, 1>
+ * Mnemonic: randd_oo = random double 0=open 1=open
+ */
+double randd_oo();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

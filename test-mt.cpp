@@ -86,14 +86,16 @@ int main()
   }
 
   printf("\nGenerating 64-bit pseudo-random numbers\n\n");
-
   for ( int n=0; n<27; ++n )
     printf("%20llu%c", rand_u64(), n % 3 == 2 ? '\n' : ' ');
 
   printf("\nFloat values in range [0..1]\n\n");
-
   for ( int n=0; n<40; ++n )
     printf("%f%c", randf_cc(), n % 5 == 4 ? '\n' : ' ');
+
+  printf("\nDouble values in range [0..1]\n\n");
+  for ( int n=0; n<40; ++n )
+    printf("%f%c", randd_cc(), n % 5 == 4 ? '\n' : ' ');
 
   printf("\nFound %u incorrect numbers\n\n", errors);
   return errors > 0;

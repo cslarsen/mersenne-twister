@@ -27,6 +27,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <sys/resource.h>
+
 #include <vector>
 
 namespace mt {
@@ -35,29 +36,35 @@ namespace mt {
   #include "mersenne-twister.h"
 };
 
-static double mark;
+struct Timer {
+  double mark_;
 
-double rusage_self()
-{
-  struct rusage ru;
-  getrusage(RUSAGE_SELF, &ru);
-  return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
-}
+  Timer() : mark_(rusage_self())
+  {
+  }
 
-void mark_time()
-{
-  mark = rusage_self();
-}
+  double rusage_self() const
+  {
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+    return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
+  }
 
-double elapsed_secs()
-{
-  return rusage_self() - mark;
-}
+  double elapsed_secs() const
+  {
+    return rusage_self() - mark_;
+  }
+
+  void reset()
+  {
+    mark_ = rusage_self();
+  }
+};
 
 /*
  * Number of digits in number.
  */
-int digits(double n)
+static int digits(double n)
 {
   int d = 1;
   n = floor(n);
@@ -79,7 +86,7 @@ int digits(double n)
  * variants such as "billion" = 10^9, instead of
  * "milliard".
  */
-const char* sscale(double n, int decimals = 1)
+static const char* sscale(double n, int decimals = 1)
 {
   static char s[32];
   static const char* name[] = {
@@ -100,40 +107,40 @@ const char* sscale(double n, int decimals = 1)
   return s;
 }
 
-double estimate_calls_per_second(double run_secs = 1.0)
+static double estimate_calls_per_second(double run_secs = 1.0)
 {
   uint64_t count = 0;
-  mark_time();
+  Timer timer;
 
   while ( count < 10000000 ) {
     mt::rand_u32();
 
     if ( (++count % 10000) == 0 ) {
-      if ( elapsed_secs() >= run_secs )
+      if ( timer.elapsed_secs() >= run_secs )
         break;
     }
   }
 
-  return count / elapsed_secs();
+  return count / timer.elapsed_secs();
 }
 
-double numbers_per_second(const uint64_t count)
+static double numbers_per_second(const uint64_t count)
 {
   printf("Generating %s numbers... ", sscale(count));
   fflush(stdout);
 
-  mark_time();
+  Timer timer;
 
   for ( uint64_t n = 0; n < count; ++n )
     mt::rand_u32();
 
-  double secs = elapsed_secs();
+  const double secs = timer.elapsed_secs();
   printf("%f seconds\n", secs);
 
   return count/secs;
 }
 
-double mean(const std::vector<double>& v)
+static double mean(const std::vector<double>& v)
 {
   double sum = 0;
 
@@ -143,7 +150,23 @@ double mean(const std::vector<double>& v)
   return sum/v.size();
 }
 
-double stddev(const std::vector<double>& v)
+static double min(const std::vector<double>& v)
+{
+  double out = DBL_MAX;
+  for ( size_t n=0; n<v.size(); ++n )
+    out = v[n] < out? v[n]: out;
+  return out;
+}
+
+static double max(const std::vector<double>& v)
+{
+  double out = 0;
+  for ( size_t n=0; n<v.size(); ++n )
+    out = v[n] > out? v[n]: out;
+  return out;
+}
+
+static double stddev(const std::vector<double>& v)
 {
   double m = mean(v);
   double sumsq = 0;
@@ -177,23 +200,37 @@ int main()
   printf("\n");
 
   std::vector<double> persec;
+  uint64_t total = 0;
+  Timer timer;
 
   // smaller batches
-  for ( uint64_t n=0; n<part-30; ++n )
+  for ( uint64_t n=0; n<part-30; ++n ) {
     persec.push_back(numbers_per_second(count/(2*part)));
+    total += count/(2*part);
+  }
 
   // normal batches
-  for ( uint64_t n=0; n<part-30; ++n )
+  for ( uint64_t n=0; n<part-30; ++n ) {
     persec.push_back(numbers_per_second(count/part));
+    total += count/part;
+  }
 
   // bigger batches
-  for ( uint64_t n=0; n<10; ++n )
+  for ( uint64_t n=0; n<10; ++n ) {
     persec.push_back(numbers_per_second(2*count/part));
+    total += 2*count/part;
+  }
 
   printf("\n");
   printf("RESULTS\n");
   printf("\n");
-  printf("  Mean performance: %s numbers/second\n", sscale(mean(persec), 4));
+  printf("  Total numbers generated: %s\n", sscale(total, 2));
+  printf("  Total speed: %s numbers/second\n", sscale(total/timer.elapsed_secs(), 4));
+  printf("\n");
+  printf("  Worst performance: %s numbers/second\n", sscale(min(persec), 4));
+  printf("  Best performance:  %s numbers/second\n", sscale(max(persec), 4));
+  printf("\n");
+  printf("  Mean performance:  %s numbers/second\n", sscale(mean(persec), 4));
   printf("  Standard deviation: %s\n\n", sscale(stddev(persec), 4));
 
   printf("If we assume a normal distribution, you can plot the above with R:\n"
@@ -209,6 +246,13 @@ int main()
   printf("Note that while the mean is quite consistent between runs, standard\n"
          "deviation may not.  Be sure to compile at maximum optimization levels,\n"
          "using your native instruction set.\n\n");
+
+  printf("Update: What you really want to look at is the *best* performance.\n"
+         "It shows what is possible given the least amount of interruption,\n"
+         "and should therefore be closer to the true performance of the code.\n"
+         "\n"
+         "The standard deviation may tell you how well the code manages to\n"
+         "avoid preemption.\n\n");
 
   return 0;
 }

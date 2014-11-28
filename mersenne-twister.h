@@ -22,6 +22,7 @@
 #ifndef MERSENNE_TWISTER_H
 #define MERSENNE_TWISTER_H
 
+#define __STDC_LIMIT_MACROS
 #include <stdint.h>
 
 #ifdef __cplusplus

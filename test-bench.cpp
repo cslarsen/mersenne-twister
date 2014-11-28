@@ -19,11 +19,14 @@
  *
  */
 
-#include <stdio.h>
-#include <stdint.h>
 #include <float.h>
-#include <sys/resource.h>
+
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 #include <math.h>
+#include <stdio.h>
+#include <sys/resource.h>
 #include <vector>
 
 namespace mt {
@@ -169,7 +172,7 @@ int main()
   uint64_t part = 40;
   uint64_t count = part*speed;
 
-  printf("Will generate %llu batches of numbers\n", part);
+  printf("Will generate %" PRIu64 " batches of numbers\n", part);
   printf("Using getrusage(), i.e., not wall-clock time\n");
   printf("\n");
 

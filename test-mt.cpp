@@ -16,7 +16,10 @@
  */
 
 #include <stdio.h>
-#include <stdint.h>
+
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 #include "mersenne-twister.h"
 
 /*
@@ -87,7 +90,7 @@ int main()
 
   printf("\nGenerating 64-bit pseudo-random numbers\n\n");
   for ( int n=0; n<27; ++n )
-    printf("%20llu%c", rand_u64(), n % 3 == 2 ? '\n' : ' ');
+    printf("%20" PRIu64 "%c", rand_u64(), n % 3 == 2 ? '\n' : ' ');
 
   printf("\nFloat values in range [0..1]\n\n");
   for ( int n=0; n<40; ++n )

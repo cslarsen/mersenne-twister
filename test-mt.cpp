@@ -156,7 +156,7 @@ int main()
     bool error = r != doubled_reference_seed1[idx];
     if ( error ) ++errors;
 
-    printf("[%11zu]%11u%c %c", n, r,
+    printf("%11zu %11u%c %c", n, r,
       error? '*' : ' ',
       idx % 4 == 3 ? '\n' : ' ');
     fflush(stdout);

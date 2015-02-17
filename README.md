@@ -11,6 +11,11 @@ only needs to observe 624 iterates to predict all future ones.  It was
 designed with statistical simulations in mind, and should therefore be quite
 good for Monte Carlo simulations, probabilistic algorithms and so on.
 
+*UPDATE*: Mikael Leetmaa has pointed out that the generated numbers are not
+correct compared to the reference implementation! I've updated the
+`test-mt.cpp` file to reflect this. Will try to fix this.  The numbers start to
+become wrong after a short time.
+
 You can read more about the [Mersenne Twister on Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister).
 
 Drop-in replacement for libc's srand() and rand()

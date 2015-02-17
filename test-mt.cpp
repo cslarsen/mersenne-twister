@@ -68,6 +68,50 @@ uint32_t expected[] = {
   1294333494,   12327951, 3318889349, 2650617233,  656828586
 };
 
+/*
+ * Reference mersenne twister numbers for seed = 1.
+ * The index of each number is doubled, so the first index is 0, then 1, 3, 7,
+ * 15, 31, ...
+ *
+ * Numbers were generated using the reference code at 
+ * http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
+ */
+uint32_t doubled_reference_seed1[] = {
+  /* n=         0 */ 1791095845,
+  /* n=         1 */ 4282876139,
+  /* n=         3 */ 4005303368,
+  /* n=         7 */ 4290846341,
+  /* n=        15 */ 2876537340,
+  /* n=        31 */ 3925436996,
+  /* n=        63 */ 2884732358,
+  /* n=       127 */ 2321861504,
+  /* n=       255 */ 1195370327,
+  /* n=       511 */  899765072,
+  /* n=      1023 */ 1714350790,
+  /* n=      2047 */ 3742484479,
+  /* n=      4095 */ 3962329154,
+  /* n=      8191 */  740139619,
+  /* n=     16383 */ 3156554771,
+  /* n=     32767 */ 2155441805,
+  /* n=     65535 */  181306153,
+  /* n=    131071 */ 1493556421,
+  /* n=    262143 */ 1963136003,
+  /* n=    524287 */ 2991783559,
+  /* n=   1048575 */ 1708194087,
+  /* n=   2097151 */  712866985,
+  /* n=   4194303 */ 2195311408,
+  /* n=   8388607 */ 2899694794,
+  /* n=  16777215 */ 1460185617,
+  /* n=  33554431 */ 1301553711,
+  /* n=  67108863 */  669321401,
+  /* n= 134217727 */ 2613167558,
+  /* n= 268435455 */ 2861867968,
+  /* n= 536870911 */  175437983,
+  /* n=1073741823 */  382741236,
+  /* n=2147483647 */ 3139600069,
+  /* n=4294967295 */ 3468780828
+};
+
 int main()
 {
   uint32_t errors = 0;
@@ -80,12 +124,13 @@ int main()
   for ( int n=0; n<200; ++n ) {
     uint32_t r = rand_u32();
 
-    bool error = r != expected[n]; 
+    bool error = r != expected[n];
     if ( error ) ++errors;
 
     printf("%10u%c%c", r,
       error? '*' : ' ',
       n % 5 == 4 ? '\n' : ' ');
+    fflush(stdout);
   }
 
   printf("\nGenerating 64-bit pseudo-random numbers\n\n");
@@ -99,6 +144,25 @@ int main()
   printf("\nDouble values in range [0..1]\n\n");
   for ( int n=0; n<40; ++n )
     printf("%f%c", randd_cc(), n % 5 == 4 ? '\n' : ' ');
+
+  printf("\nChecking reference numbers for seed 1 (may take some time)\n\n");
+  srand(1);
+  for ( size_t n=0, target=1, idx=0; n<=0xffffffff; ++n ) {
+    uint32_t r = rand_u32();
+
+    if ( n != (target-1) )
+      continue;
+
+    bool error = r != doubled_reference_seed1[idx];
+    if ( error ) ++errors;
+
+    printf("[%11zu]%11u%c %c", n, r,
+      error? '*' : ' ',
+      idx % 4 == 3 ? '\n' : ' ');
+    fflush(stdout);
+    target *= 2;
+    ++idx;
+  }
 
   printf("\nFound %u incorrect numbers\n\n", errors);
   return errors > 0;

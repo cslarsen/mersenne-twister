@@ -1,2 +1,9 @@
-Written by Christian Stigen Larsen <csl@sublevel3.org>
-http://csl.sublevel3.org
+Written by Christian Stigen Larsen <csl@csl.name>
+http://csl.name
+
+ACKNOWLEDGEMENTS
+
+Mikael Leetmaa for pointing out that the numbers were not the same as the
+reference implementation.
+
+Nyall Dawson for pointing out that the first loop had an out-of-bounds read.

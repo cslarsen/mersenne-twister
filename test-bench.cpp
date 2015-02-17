@@ -5,7 +5,7 @@
  *        performance.  It is NOT a scientific benchmark.
  *
  * Written by Christian Stigen Larsen
- * http://csl.sublevel3.org
+ * http://csl.name
  *
  * Distributed under the modified BSD license.
  *

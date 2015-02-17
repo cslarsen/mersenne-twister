@@ -11,12 +11,18 @@ only needs to observe 624 iterates to predict all future ones.  It was
 designed with statistical simulations in mind, and should therefore be quite
 good for Monte Carlo simulations, probabilistic algorithms and so on.
 
-**UPDATE**: Mikael Leetmaa has pointed out that the generated numbers are not
-correct compared to the reference implementation! I've updated the
-`test-mt.cpp` file to reflect this. Will try to fix this.  The numbers start to
-become wrong after a short time.
-
 You can read more about the [Mersenne Twister on Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister).
+
+**UPDATE**: Prior versions that did loop unrolling had a bug that caused
+numbers to differ significantly from the reference MT implementation. I would
+like to thank Mikael Leetmaa for pointing this out.
+
+This has now been fixed, and I've expanded the test suite to test runs of four
+billion numbers (I only check individual numbers at doubling index positions,
+but only a few hundred _consecutive_ sequences).
+
+Nyall Dawson also pointed out that I did an out-of-bounds read in the array.
+This has also been fixed. Thanks!
 
 Drop-in replacement for libc's srand() and rand()
 -------------------------------------------------
@@ -234,11 +240,11 @@ Please report any bugs to the author.
 Author and license
 ------------------
 
-Written by [Christian Stigen Larsen](http://csl.sublevel3.org)
+Written by [Christian Stigen Larsen](http://csl.name)
 
 Distributed under the modified BSD license.
 
-2012-01-11
+2015-02-17
 
 References
 ----------

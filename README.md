@@ -13,16 +13,16 @@ good for Monte Carlo simulations, probabilistic algorithms and so on.
 
 You can read more about the [Mersenne Twister on Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister).
 
-**UPDATE**: Prior versions that did loop unrolling had a bug that caused
-numbers to differ significantly from the reference MT implementation. I would
-like to thank Mikael Leetmaa for pointing this out.
+**UPDATE**
 
-This has now been fixed, and I've expanded the test suite to test runs of four
-billion numbers (I only check individual numbers at doubling index positions,
-but only a few hundred _consecutive_ sequences).
+All prior versions with loop unrolling had a bug that caused numbers to differ
+significantly from the reference implementation. This has now been fixed, and
+the tests have been expanded to test 2000 consecutive numbers and numbers at
+doubed index positions up to over four billion.  Thanks to Mikael Leetmaa for
+letting me know about this!
 
-Nyall Dawson also pointed out that I did an out-of-bounds read in the array.
-This has also been fixed. Thanks!
+I've also fixed an out-of-bounds read in the MT array. Thanks to Nyall Dawson
+for finding this bug!
 
 Drop-in replacement for libc's srand() and rand()
 -------------------------------------------------

@@ -18,7 +18,7 @@ You can read more about the [Mersenne Twister on Wikipedia](https://secure.wikim
 All prior versions with loop unrolling had a bug that caused numbers to differ
 significantly from the reference implementation. This has now been fixed, and
 the tests have been expanded to test 2000 consecutive numbers and numbers at
-doubed index positions up to over four billion.  Thanks to Mikael Leetmaa for
+doubling index positions up to over four billion.  Thanks to Mikael Leetmaa for
 letting me know about this!
 
 I've also fixed an out-of-bounds read in the MT array. Thanks to Nyall Dawson

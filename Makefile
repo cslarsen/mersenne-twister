@@ -7,6 +7,9 @@ check: all
 	./test-mt
 	./test-bench
 
+benchmark: all
+	./test-bench
+
 test-mt: mersenne-twister.o
 test-bench: mersenne-twister.o
 

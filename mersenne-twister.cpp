@@ -63,7 +63,7 @@ static inline void generate_numbers()
   register uint32_t y, i;
 
   // i = [0 ... 226]
-  for ( i=0; i<DIFF; ++i ) {
+  for ( i=0; i<(DIFF-1); ++i ) {
     /*
      * We're doing 226 = 113*2, an even number of steps, so we can
      * safely unroll one more step here for speed:

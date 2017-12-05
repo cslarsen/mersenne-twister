@@ -22,12 +22,57 @@
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
+#include <sys/resource.h>
+
 namespace mt {
   #include "mersenne-twister.h"
 }
 
 namespace reference {
   #include "reference/mt19937ar.c"
+}
+
+struct Timer {
+  double mark_;
+
+  Timer() : mark_(rusage_self())
+  {
+  }
+
+  double rusage_self() const
+  {
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+    return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
+  }
+
+  double elapsed_secs() const
+  {
+    return rusage_self() - mark_;
+  }
+
+  void reset()
+  {
+    mark_ = rusage_self();
+  }
+};
+
+template<class X, class Y>
+uint32_t benchmark(
+    uint32_t seed,
+    uint64_t iterations,
+    X set_seed,
+    Y draw_u32)
+{
+  uint32_t hash = 0xffffffff;
+
+  set_seed(seed);
+
+  for ( uint64_t n = 0; n < iterations; ++n ) {
+    hash ^= draw_u32();
+  }
+
+  return hash;
 }
 
 int main()
@@ -65,6 +110,19 @@ int main()
     }
 
     printf("\rPass %d/%d OK     \n", 1 + pass, passes);
+  }
+
+  const uint64_t iterations = 100000000ULL;
+  {
+    Timer t;
+    uint32_t hash = benchmark(0, iterations, reference::init_genrand, reference::genrand_int32);
+    printf("%g secs (reference hash 0x%x)\n", t.elapsed_secs(), hash);
+  }
+
+  {
+    Timer t;
+    uint32_t hash = benchmark(0, iterations, mt::seed, mt::rand_u32);
+    printf("%g secs (reference hash 0x%x)\n", t.elapsed_secs(), hash);
   }
 
   return 0;

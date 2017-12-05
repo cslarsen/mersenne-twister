@@ -1,17 +1,15 @@
-TARGETS = mersenne-twister.o test-mt test-bench
-CXXFLAGS = -W -Wall -O3 -fomit-frame-pointer
+TARGETS = mersenne-twister.o test-mt
+CXXFLAGS = -W -Wall -O2 -march=native -ftree-vectorize -fomit-frame-pointer
 
 all: $(TARGETS)
 
 check: all
 	./test-mt
-	./test-bench
 
-benchmark: all
-	./test-bench
+benchmark: check
 
 test-mt: mersenne-twister.o
-test-bench: mersenne-twister.o
+test-bench: test-mt
 
 clean:
 	rm -f $(TARGETS)

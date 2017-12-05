@@ -75,14 +75,62 @@ uint32_t benchmark(
   return hash;
 }
 
+int benchmark(const uint64_t iterations = 200000000ULL)
+{
+  const int passes = 10;
+  double reftime=9999, ourtime=9999;
+
+  printf("Benchmarking against reference implementation ... please wait\n");
+  printf("Will take the *best* times over %d runs for each\n", passes);
+
+  // Calculate hashes so that the optimizer won't optimize away
+  uint32_t refhash, ourhash;
+
+  for ( int pass = 0; pass < passes; ++pass ) {
+    {
+      Timer t;
+      refhash = benchmark(0, iterations, reference::init_genrand, reference::genrand_int32);
+      const double elapsed = t.elapsed_secs();
+      if ( elapsed < reftime ) {
+        reftime = elapsed;
+        printf("  * %9.7f secs (mt19937ar.c)\n", reftime);
+      } else {
+        printf("  * no improvement (mt19937ar.c)\n");
+      }
+    }
+
+    {
+      Timer t;
+      ourhash = benchmark(0, iterations, mt::seed, mt::rand_u32);
+      const double elapsed = t.elapsed_secs();
+      if ( elapsed < ourtime ) {
+        ourtime = elapsed;
+        printf("  * %9.7f secs (our mt)\n", ourtime);
+      } else {
+        printf("  * no improvement (our mt)\n");
+      }
+    }
+
+    if ( refhash != ourhash ) {
+      printf("Hashes do not match\n");
+      return 1;
+    }
+  }
+
+  const double ratio = reftime / ourtime;
+  printf("  * %9.7f x %s (higher is better)\n", ratio,
+      ratio > 1 ? "faster" : "slower");
+  return 0;
+}
+
 int main()
 {
   printf("Testing Mersenne Twister with reference implementation\n");
 
-  const uint32_t seeds = 10000;
-  const uint32_t start = 0;
-  const uint32_t stop = 10000;
   const uint32_t passes = 2;
+  const uint32_t seeds  = 5000;
+  const uint32_t start  = 0;
+  const uint32_t stop   = 5000;
 
   for ( uint32_t pass=0; pass < passes; ++pass) {
     for ( uint32_t seed = 0; seed < seeds; ++seed ) {
@@ -90,7 +138,7 @@ int main()
       reference::init_genrand(seed);
 
       if ( (seed % 100) == 0 ) {
-        printf("\rPass %d/%d %4" PRIu64 "%%", 1 + pass, passes,
+        printf("\r  * Pass %d/%d %4" PRIu64 "%%", 1 + pass, passes,
             100ULL * uint64_t(seed)/uint64_t(seeds));
         fflush(stdout);
       }
@@ -100,30 +148,19 @@ int main()
         uint32_t b = reference::genrand_int32();
 
         if ( a != b ) {
-          printf("\rError: For seed=%" PRIu32
-                 " and n=%" PRIu32
-                 " got %" PRIu32
-                 " but expected %" PRIu32 "\n", seed, n, a, b);
+          printf("\r  * Pass %d/%d ERROR\n", 1 + pass, passes);
+          printf("\r    seed=%" PRIu32
+                         " n=%" PRIu32
+                  " expected %" PRIu32
+                  " got %" PRIu32 "\n", seed, n, b, a);
           return 1;
         }
       }
     }
 
-    printf("\rPass %d/%d OK     \n", 1 + pass, passes);
+    printf("\r  * Pass %d/%d  OK       \n", 1 + pass, passes);
   }
 
-  const uint64_t iterations = 100000000ULL;
-  {
-    Timer t;
-    uint32_t hash = benchmark(0, iterations, reference::init_genrand, reference::genrand_int32);
-    printf("%g secs (reference hash 0x%x)\n", t.elapsed_secs(), hash);
-  }
-
-  {
-    Timer t;
-    uint32_t hash = benchmark(0, iterations, mt::seed, mt::rand_u32);
-    printf("%g secs (reference hash 0x%x)\n", t.elapsed_secs(), hash);
-  }
-
+  benchmark();
   return 0;
 }

@@ -28,20 +28,20 @@
  * 31 unused bits, so we have a seed value of
  * 624*32-31 = 19937 bits.
  */
-static const unsigned SIZE   = 624;
-static const unsigned PERIOD = 397;
-static const unsigned DIFF   = SIZE-PERIOD;
+static const size_t SIZE   = 624;
+static const size_t PERIOD = 397;
+static const size_t DIFF   = SIZE-PERIOD;
 
 static uint32_t MT[SIZE];
-static unsigned index = 0;
+static size_t index = SIZE;
 
 #define M32(x) (0x80000000 & x) // 32nd Most Significant Bit
 #define L31(x) (0x7FFFFFFF & x) // 31 Least Significant Bits
-#define ODD(x) (x & 1) // Check if number is odd
 
 #define UNROLL(expr) \
   y = M32(MT[i]) | L31(MT[i+1]); \
-  MT[i] = MT[expr] ^ (y>>1) ^ MATRIX[ODD(y)]; \
+  t = ((int32_t(y) << 31) >> 31) & 0x9908b0df; \
+  MT[i] = MT[expr] ^ (y >> 1) ^ t; \
   ++i;
 
 static inline void generate_numbers()
@@ -64,8 +64,9 @@ static inline void generate_numbers()
    *
    */
 
-  static const uint32_t MATRIX[2] = {0, 0x9908b0df};
-  register uint32_t y, i=0;
+  uint32_t y;
+  int32_t t;
+  uint32_t i=0;
 
   // i = [0 ... 225]
   while ( i<(DIFF-1) ) {
@@ -100,8 +101,9 @@ static inline void generate_numbers()
   }
 
   // i = 623
-  y = M32(MT[SIZE-1]) | L31(MT[0]); \
-  MT[SIZE-1] = MT[PERIOD-1] ^ (y>>1) ^ MATRIX[ODD(y)]; \
+  y = M32(MT[SIZE-1]) | L31(MT[0]);
+  t = ((int32_t(y) << 31) >> 31) & 0x9908b0df;
+  MT[SIZE-1] = MT[PERIOD-1] ^ (y >> 1) ^ t;
 }
 
 extern "C" void seed(uint32_t value)
@@ -139,28 +141,26 @@ extern "C" void seed(uint32_t value)
    */
 
   MT[0] = value;
-  index = 0;
+  index = SIZE;
 
-  for ( register unsigned i=1; i<SIZE; ++i )
+  for ( unsigned i=1; i<SIZE; ++i )
     MT[i] = 0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i;
 }
 
 extern "C" uint32_t rand_u32()
 {
-  if ( !index )
+  if ( index == SIZE ) {
     generate_numbers();
+    index = 0;
+  }
 
-  register uint32_t y = MT[index];
+  uint32_t y = MT[index++];
 
   // Tempering
-  y ^= y>>11;
-  y ^= y<< 7 & 0x9d2c5680;
-  y ^= y<<15 & 0xefc60000;
-  y ^= y>>18;
-
-  if ( ++index == SIZE )
-    index = 0;
-
+  y ^= (y >> 11);
+  y ^= (y << 7) & 0x9d2c5680;
+  y ^= (y << 15) & 0xefc60000;
+  y ^= (y >> 18);
   return y;
 }
 

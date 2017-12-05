@@ -1,5 +1,9 @@
 TARGETS = mersenne-twister.o test-mt
-CXXFLAGS = -W -Wall -O2 -march=native -ftree-vectorize -fomit-frame-pointer
+CXXFLAGS = -W -Wall -Wextra -Wsign-compare \
+					 -O2 \
+					 -march=native \
+					 -ftree-vectorize \
+					 -fomit-frame-pointer
 
 all: $(TARGETS)
 

@@ -93,9 +93,34 @@ To build the example, just type
     $ make clean check
 
 You'll see if this implementation runs faster than the reference non-SIMD
-Mersenne Twister.
+Mersenne Twister. On an older Intel Core i7 (my machine), the output looks like
+this:
 
-To actually use this, include the header and cpp file into your project. Then
+    $ ./test-mt 20
+    Testing Mersenne Twister with reference implementation
+      * Pass 1/2  OK       
+      * Pass 2/2  OK       
+
+    Timing our implementation (best times over 20 passes) ... 
+      1.0321990s 
+      0.9729490s ..................
+      min=0.972949s max=1.0322s mean=1.00114s stddev=0.0143048s
+      193.8 million — 205.6 million numbers/second
+
+    Timing reference mt19937ar.c (best times over 20 passes) ... 
+      1.1132160s .
+      1.1116460s ..
+      1.0994660s .
+      1.0944240s ............
+      min=1.09442s max=1.14412s mean=1.12278s stddev=0.0126344s
+      174.8 million — 182.7 million numbers/second
+
+    1.12485 times faster than the reference (ratio of best runs)
+
+You can pass the number of iterations to perform on the command line.
+
+To actually use the code, include the header and cpp file into your project.
+Then
 
     namespace mt {
       #include "mersenne-twister.h"

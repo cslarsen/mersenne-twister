@@ -9,4 +9,5 @@ reference implementation.
 Nyall Dawson for pointing out that the first loop had an out-of-bounds read.
 
 Michel Valin for suggesting a way to improve speed by replacing the MATRIX with
-signed shift masking.
+signed shift masking (seems to work particularly well on machines with SSE/AVX
+instructions).

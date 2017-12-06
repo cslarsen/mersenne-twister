@@ -6,7 +6,7 @@ This is an implementation of the fast pseudo-random number generator (PRNG)
 name because it has a period of 2^19937 - 1, which is a Mersenne prime.
 
 The Mersenne Twister is highly regarded for its performance and high quality
-pseudo-random numbers.  In spite of this, it is *not* suited for cryptographic
+pseudo-random numbers. In spite of this, it is *not* suited for cryptographic
 code, because one only needs to observe 624 iterates to predict all future
 ones.  It was designed with statistical simulations in mind, and should
 therefore be quite good for Monte Carlo simulations, probabilistic algorithms
@@ -20,7 +20,7 @@ Wikipedia](https://secure.wikimedia.org/wikipedia/en/wiki/Mersenne_twister).
 I removed the `srand` and `rand` C standard library drop-in functions, because
 I believe they contained errors.
 
-**UPDATE**
+**OLDER UPDATE**
 
 All prior versions with loop unrolling had a bug that caused numbers to differ
 significantly from the reference implementation. This has now been fixed, and
@@ -91,6 +91,23 @@ Compilation and usage
 To build the example, just type
 
     $ make clean check
+
+You'll see if this implementation runs faster than the reference non-SIMD
+Mersenne Twister.
+
+To actually use this, include the header and cpp file into your project. Then
+
+    namespace mt {
+      #include "mersenne-twister.h"
+    }
+
+    // ...
+
+    mt::seed(1234);
+    printf("a pseudo-random number: %d\n", mt::rand_u32());
+
+Also look at the `Makefile` here as well, it contains a few optimization flags
+that you may want to use.
 
 Bugs
 ----

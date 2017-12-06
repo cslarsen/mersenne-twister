@@ -9,7 +9,7 @@ CXXFLAGS = -W -Wall -Wextra -Wsign-compare \
 all: $(TARGETS)
 
 check: all
-	./test-mt
+	./test-mt 20
 
 benchmark: check
 

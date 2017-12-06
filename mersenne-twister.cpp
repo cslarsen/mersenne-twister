@@ -24,7 +24,8 @@
  */
 static const int SIZE   = 624;
 static const int PERIOD = 397;
-static const int DIFF   = SIZE-PERIOD;
+static const int DIFF   = SIZE - PERIOD;
+static const uint32_t MAGIC = 0x9908b0df;
 
 static uint32_t MT[SIZE];
 static int index = SIZE;
@@ -34,10 +35,10 @@ static int index = SIZE;
 
 #define UNROLL(expr) \
   y = M32(MT[i]) | L31(MT[i+1]); \
-  MT[i] = MT[expr] ^ (y >> 1) ^ ((int32_t(y) << 31) >> 31) & 0x9908b0df; \
+  MT[i] = MT[expr] ^ (y >> 1) ^ ((int32_t(y) << 31) >> 31) & MAGIC; \
   ++i;
 
-static inline void generate_numbers()
+static void generate_numbers()
 {
   /*
    * For performance reasons, we've unrolled the loop three times, thus
@@ -90,8 +91,7 @@ static inline void generate_numbers()
 
   // i = 623
   y = M32(MT[SIZE-1]) | L31(MT[0]);
-  MT[SIZE-1] = MT[PERIOD-1] ^ (y >> 1) ^ (((int32_t(y) << 31) >> 31) &
-      0x9908b0df);
+  MT[SIZE-1] = MT[PERIOD-1] ^ (y >> 1) ^ (((int32_t(y) << 31) >> 31) & MAGIC);
 }
 
 extern "C" void seed(uint32_t value)

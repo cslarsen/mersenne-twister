@@ -1,6 +1,8 @@
-TARGETS = mersenne-twister.o test-mt
+TARGETS = mersenne-twister.o reference/mt19937ar.o test-mt
 CXXFLAGS = -W -Wall -Wextra -Wsign-compare \
 					 --std=gnu++11 \
+					 -m64 \
+					 -msse \
 					 -O2 \
 					 -march=native \
 					 -ftree-vectorize \
@@ -13,7 +15,7 @@ check: all
 
 benchmark: check
 
-test-mt: mersenne-twister.o
+test-mt: mersenne-twister.o reference/mt19937ar.o
 test-bench: test-mt
 
 clean:

@@ -54,7 +54,7 @@ static unsigned long mt[N]; /* the array for the state vector  */
 static int mti=N+1; /* mti==N+1 means mt[N] is not initialized */
 
 /* initializes mt[N] with a seed */
-void init_genrand(unsigned long s)
+extern "C" void init_genrand(unsigned long s)
 {
     mt[0]= s & 0xffffffffUL;
     for (mti=1; mti<N; mti++) {
@@ -73,7 +73,7 @@ void init_genrand(unsigned long s)
 /* init_key is the array for initializing keys */
 /* key_length is its length */
 /* slight change for C++, 2004/2/26 */
-void init_by_array(unsigned long init_key[], int key_length)
+extern "C" void init_by_array(unsigned long init_key[], int key_length)
 {
     int i, j, k;
     init_genrand(19650218UL);
@@ -99,7 +99,7 @@ void init_by_array(unsigned long init_key[], int key_length)
 }
 
 /* generates a random number on [0,0xffffffff]-interval */
-unsigned long genrand_int32(void)
+extern "C" unsigned long genrand_int32(void)
 {
     unsigned long y;
     static unsigned long mag01[2]={0x0UL, MATRIX_A};
@@ -137,34 +137,34 @@ unsigned long genrand_int32(void)
 }
 
 /* generates a random number on [0,0x7fffffff]-interval */
-long genrand_int31(void)
+extern "C" long genrand_int31(void)
 {
     return (long)(genrand_int32()>>1);
 }
 
 /* generates a random number on [0,1]-real-interval */
-double genrand_real1(void)
+extern "C" double genrand_real1(void)
 {
     return genrand_int32()*(1.0/4294967295.0); 
     /* divided by 2^32-1 */ 
 }
 
 /* generates a random number on [0,1)-real-interval */
-double genrand_real2(void)
+extern "C" double genrand_real2(void)
 {
     return genrand_int32()*(1.0/4294967296.0); 
     /* divided by 2^32 */
 }
 
 /* generates a random number on (0,1)-real-interval */
-double genrand_real3(void)
+extern "C" double genrand_real3(void)
 {
     return (((double)genrand_int32()) + 0.5)*(1.0/4294967296.0); 
     /* divided by 2^32 */
 }
 
 /* generates a random number on [0,1) with 53-bit resolution*/
-double genrand_res53(void) 
+extern "C" double genrand_res53(void) 
 { 
     unsigned long a=genrand_int32()>>5, b=genrand_int32()>>6; 
     return(a*67108864.0+b)*(1.0/9007199254740992.0); 

@@ -1,6 +1,4 @@
-test-mt
-test-bench
-test-run
-plot.png
-mersenne-twister.o
+*.o
 *.swp
+plot.png
+test-mt

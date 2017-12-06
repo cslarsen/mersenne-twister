@@ -26,7 +26,7 @@ namespace mt {
 }
 
 namespace reference {
-  #include "reference/mt19937ar.c"
+  #include "reference/mt19937ar.h"
 }
 
 struct Timer {

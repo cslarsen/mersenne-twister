@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include "mersenne-twister.h"
 
+// Better on older Intel Core i7, but worse on newer Intel Xeon CPUs (undefine
+// it on those).
+#define MT_UNROLL_MORE
+
 /*
  * We have an array of 624 32-bit values, and there are 31 unused bits, so we
  * have a seed value of 624*32-31 = 19937 bits.
@@ -78,6 +82,7 @@ static void generate_numbers()
      * Xeon, they may actually hurt performance (also, with newer gcc
      * versions).
      */
+#ifdef MT_UNROLL_MORE
     UNROLL(i-DIFF);
     UNROLL(i-DIFF);
     UNROLL(i-DIFF);
@@ -87,6 +92,7 @@ static void generate_numbers()
     UNROLL(i-DIFF);
     UNROLL(i-DIFF);
     UNROLL(i-DIFF);
+#endif
   }
 
   // i = 623

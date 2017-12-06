@@ -1,5 +1,6 @@
 TARGETS = mersenne-twister.o test-mt
 CXXFLAGS = -W -Wall -Wextra -Wsign-compare \
+					 --std=gnu++11 \
 					 -O2 \
 					 -march=native \
 					 -ftree-vectorize \

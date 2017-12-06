@@ -21,10 +21,15 @@
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
+#include <math.h>
+#include <float.h>
 
 #include <sys/resource.h>
 
+#include <vector>
+
 namespace mt {
+  #undef RAND_MAX
   #include "mersenne-twister.h"
 }
 
@@ -58,12 +63,21 @@ struct Timer {
 };
 
 template<class X, class Y>
-uint32_t benchmark(
+#if defined(__clang__)
+  [[clang::optnone]]
+#endif
+static uint32_t benchmark_hash(
     uint32_t seed,
     uint64_t iterations,
     X set_seed,
     Y draw_u32)
+#if defined(__GNUC__)
+# if !defined(__clang__)
+  __attribute__((optimize("-O0")))
+# endif
+#endif
 {
+  // Use a hash so that the compiler doesn't optimize away the for-loop
   uint32_t hash = 0xffffffff;
 
   set_seed(seed);
@@ -75,52 +89,112 @@ uint32_t benchmark(
   return hash;
 }
 
-int benchmark(const uint64_t iterations = 200000000ULL)
+struct Benchmark {
+  uint32_t hash;
+  double best;
+  std::vector<double> times;
+
+  Benchmark() : hash(0xffffffff), best(9999999999)
+  {
+  }
+};
+
+template<class SEEDFUNC, class RANDFUNC>
+static Benchmark benchmark_hashes(
+    SEEDFUNC set_seed,
+    RANDFUNC draw_u32,
+    const size_t passes = 15,
+    const size_t subiterations = 200000000ULL)
 {
-  const int passes = 10;
-  double reftime=9999, ourtime=9999;
+  Benchmark result;
 
-  printf("Benchmarking against reference implementation ... please wait\n");
-  printf("Will take the *best* times over %d runs for each\n", passes);
+  for ( size_t pass = 0; pass < passes; ++pass ) {
+    Timer timer;
+    // use a different seed each time
+    result.hash ^= benchmark_hash(pass*19, subiterations, set_seed, draw_u32);
+    const double secs = timer.elapsed_secs();
+    result.times.push_back(secs);
 
-  // Calculate hashes so that the optimizer won't optimize away
-  uint32_t refhash, ourhash;
-
-  for ( int pass = 0; pass < passes; ++pass ) {
-    {
-      Timer t;
-      refhash = benchmark(0, iterations, reference::init_genrand, reference::genrand_int32);
-      const double elapsed = t.elapsed_secs();
-      if ( elapsed < reftime ) {
-        reftime = elapsed;
-        printf("  * %9.7f secs (mt19937ar.c)\n", reftime);
-      } else {
-        printf("  * no improvement (mt19937ar.c)\n");
-      }
-    }
-
-    {
-      Timer t;
-      ourhash = benchmark(0, iterations, mt::seed, mt::rand_u32);
-      const double elapsed = t.elapsed_secs();
-      if ( elapsed < ourtime ) {
-        ourtime = elapsed;
-        printf("  * %9.7f secs (our mt)\n", ourtime);
-      } else {
-        printf("  * no improvement (our mt)\n");
-      }
-    }
-
-    if ( refhash != ourhash ) {
-      printf("Hashes do not match\n");
-      return 1;
+    if ( secs < result.best ) {
+      result.best = secs;
+      printf(" %8.6fs ", result.best);
+      fflush(stdout);
+    } else {
+      printf(".");
+      fflush(stdout);
     }
   }
 
-  const double ratio = reftime / ourtime;
-  printf("  * %9.7f x %s (higher is better)\n", ratio,
+  return result;
+}
+
+static double mean(const std::vector<double>& v)
+{
+  double sum = 0;
+
+  for ( size_t n=0; n<v.size(); ++n )
+    sum += v[n];
+
+  return sum/v.size();
+}
+
+static double min(const std::vector<double>& v)
+{
+  double out = DBL_MAX;
+  for ( size_t n=0; n<v.size(); ++n )
+    out = v[n] < out? v[n]: out;
+  return out;
+}
+
+static double max(const std::vector<double>& v)
+{
+  double out = 0;
+  for ( size_t n=0; n<v.size(); ++n )
+    out = v[n] > out? v[n]: out;
+  return out;
+}
+
+static double stddev(const std::vector<double>& v)
+{
+  double m = mean(v);
+  double sumsq = 0;
+
+  for ( size_t n=0; n<v.size(); ++n )
+    sumsq += (v[n] - m) * (v[n] - m);
+
+  return sqrt(sumsq/v.size());
+}
+
+static void run_benchmark()
+{
+  printf("\nTiming reference mt19937ar.c ... ");
+  fflush(stdout);
+
+  const auto ref = benchmark_hashes(reference::init_genrand,
+      reference::genrand_int32);
+
+  printf("\n");
+  printf("  min=%g max=%g mean=%g stddev=%g\n",
+      min(ref.times), max(ref.times), mean(ref.times),
+      stddev(ref.times));
+
+  printf("\nTiming our implementation ... ");
+  fflush(stdout);
+
+  const auto our = benchmark_hashes(mt::seed, mt::rand_u32);
+
+  printf("\n");
+  printf("  min=%g max=%g mean=%g stddev=%g\n",
+      min(our.times), max(our.times), mean(our.times),
+      stddev(our.times));
+
+  if ( our.hash != ref.hash ) {
+    printf("Error: Our implementation produces incorrect numbers\n");
+  }
+
+  const double ratio = ref.best / our.best;
+  printf("\n%g times %s than the reference (ratio of best runs)\n", ratio,
       ratio > 1 ? "faster" : "slower");
-  return 0;
 }
 
 int main()
@@ -161,6 +235,6 @@ int main()
     printf("\r  * Pass %d/%d  OK       \n", 1 + pass, passes);
   }
 
-  benchmark();
+  run_benchmark();
   return 0;
 }

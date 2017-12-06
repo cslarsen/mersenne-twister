@@ -32,72 +32,14 @@ extern "C" {
 #endif
 
 /*
- * Maximum number you can get from rand().
- */
-#define RAND_MAX INT32_MAX
-
-/*
- * Initialize the number generator with given seed.
- * (LIBC REPLACEMENT FUNCTION)
- */
-void srand(unsigned seed_value);
-
-/*
- * Extract a pseudo-random integer in the range 0 ... RAND_MAX.
- * (LIBC REPLACEMENT FUNCTION)
- */
-int rand();
-
-/*
  * Extract a pseudo-random unsigned 32-bit integer in the range 0 ... UINT32_MAX
  */
 uint32_t rand_u32();
 
 /*
- * Combine two unsigned 32-bit pseudo-random numbers into one 64-bit
- */
-uint64_t rand_u64();
-
-/*
  * Initialize Mersenne Twister with given seed value.
  */
 void seed(uint32_t seed_value);
-
-/*
- * Return a random float in the CLOSED range [0, 1]
- * Mnemonic: randf_co = random float 0=closed 1=closed
- */
-float randf_cc();
-
-/*
- * Return a random float in the OPEN range [0, 1>
- * Mnemonic: randf_co = random float 0=closed 1=open
- */
-float randf_co();
-
-/*
- * Return a random float in the OPEN range <0, 1>
- * Mnemonic: randf_oo = random float 0=open 1=open
- */
-float randf_oo();
-
-/*
- * Return a random double in the CLOSED range [0, 1]
- * Mnemonic: randd_co = random double 0=closed 1=closed
- */
-double randd_cc();
-
-/*
- * Return a random double in the OPEN range [0, 1>
- * Mnemonic: randd_co = random double 0=closed 1=open
- */
-double randd_co();
-
-/*
- * Return a random double in the OPEN range <0, 1>
- * Mnemonic: randd_oo = random double 0=open 1=open
- */
-double randd_oo();
 
 #ifdef __cplusplus
 } // extern "C"

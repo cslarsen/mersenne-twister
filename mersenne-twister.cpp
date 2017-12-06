@@ -1,78 +1,58 @@
 /* 
  * The Mersenne Twister pseudo-random number generator (PRNG)
  *
- * This is an implementation of fast PRNG called MT19937,
- * meaning it has a period of 2^19937-1, which is a Mersenne
- * prime.
+ * This is an implementation of fast PRNG called MT19937, meaning it has a
+ * period of 2^19937-1, which is a Mersenne prime.
  *
- * This PRNG is fast and suitable for non-cryptographic code.
- * For instance, it would be perfect for Monte Carlo simulations,
- * etc.
+ * This PRNG is fast and suitable for non-cryptographic code.  For instance, it
+ * would be perfect for Monte Carlo simulations, etc.
  *
  * For all the details on this algorithm, see the original paper:
  * http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ARTICLES/mt.pdf
  *
  * Written by Christian Stigen Larsen
- * http://csl.name
- *
  * Distributed under the modified BSD license.
- *
- * 2015-02-17
+ * 2015-02-17, 2017-12-06
  */
 
 #include <stdio.h>
 #include "mersenne-twister.h"
 
 /*
- * We have an array of 624 32-bit values, and there are
- * 31 unused bits, so we have a seed value of
- * 624*32-31 = 19937 bits.
+ * We have an array of 624 32-bit values, and there are 31 unused bits, so we
+ * have a seed value of 624*32-31 = 19937 bits.
  */
-static const size_t SIZE   = 624;
-static const size_t PERIOD = 397;
-static const size_t DIFF   = SIZE-PERIOD;
+static const int SIZE   = 624;
+static const int PERIOD = 397;
+static const int DIFF   = SIZE-PERIOD;
 
 static uint32_t MT[SIZE];
-static size_t index = SIZE;
+static int index = SIZE;
 
 #define M32(x) (0x80000000 & x) // 32nd Most Significant Bit
 #define L31(x) (0x7FFFFFFF & x) // 31 Least Significant Bits
 
 #define UNROLL(expr) \
   y = M32(MT[i]) | L31(MT[i+1]); \
-  t = ((int32_t(y) << 31) >> 31) & 0x9908b0df; \
-  MT[i] = MT[expr] ^ (y >> 1) ^ t; \
+  MT[i] = MT[expr] ^ (y >> 1) ^ ((int32_t(y) << 31) >> 31) & 0x9908b0df; \
   ++i;
 
 static inline void generate_numbers()
 {
   /*
-   * Originally, we had one loop with i going from [0, SIZE) and
-   * two modulus operations:
-   *
-   * for ( register unsigned i=0; i<SIZE; ++i ) {
-   *   register uint32_t y = M32(MT[i]) | L31(MT[(i+1) % SIZE]);
-   *   MT[i] = MT[(i + PERIOD) % SIZE] ^ (y>>1);
-   *   if ( ODD(y) ) MT[i] ^= 0x9908b0df;
-   * }
-   *
    * For performance reasons, we've unrolled the loop three times, thus
-   * mitigating the need for any modulus operations.
-   *
-   * Anyway, it seems this trick is old hat:
-   * http://www.quadibloc.com/crypto/co4814.htm
-   *
+   * mitigating the need for any modulus operations. Anyway, it seems this
+   * trick is old hat: http://www.quadibloc.com/crypto/co4814.htm
    */
 
   uint32_t y;
-  int32_t t;
-  uint32_t i=0;
+  int i=0;
 
   // i = [0 ... 225]
   while ( i<(DIFF-1) ) {
     /*
-     * We're doing 226 = 113*2, an even number of steps, so we can
-     * safely unroll one more step here for speed:
+     * We're doing 226 = 113*2, an even number of steps, so we can safely
+     * unroll one more step here for speed:
      */
     UNROLL(i+PERIOD);
     UNROLL(i+PERIOD);
@@ -89,6 +69,14 @@ static inline void generate_numbers()
      */
     UNROLL(i-DIFF);
     UNROLL(i-DIFF);
+
+    /*
+     * You can comment out the following lines if you want to, and rather let
+     * the compiler unroll with -funroll-loops. On my old Intel i7, the below
+     * code *definitely* makes an impact, but on newer machines like Intel
+     * Xeon, they may actually hurt performance (also, with newer gcc
+     * versions).
+     */
     UNROLL(i-DIFF);
     UNROLL(i-DIFF);
     UNROLL(i-DIFF);
@@ -102,8 +90,8 @@ static inline void generate_numbers()
 
   // i = 623
   y = M32(MT[SIZE-1]) | L31(MT[0]);
-  t = ((int32_t(y) << 31) >> 31) & 0x9908b0df;
-  MT[SIZE-1] = MT[PERIOD-1] ^ (y >> 1) ^ t;
+  MT[SIZE-1] = MT[PERIOD-1] ^ (y >> 1) ^ (((int32_t(y) << 31) >> 31) &
+      0x9908b0df);
 }
 
 extern "C" void seed(uint32_t value)
@@ -162,64 +150,4 @@ extern "C" uint32_t rand_u32()
   y ^= (y << 15) & 0xefc60000;
   y ^= (y >> 18);
   return y;
-}
-
-extern "C" int rand()
-{
-  /*
-   * PORTABILITY WARNING:
-   *
-   * rand_u32() uses all 32-bits for the pseudo-random number,
-   * but rand() must return a number from 0 ... RAND_MAX.
-   *
-   * We'll just assume that rand() only uses 31 bits worth of
-   * data, and that we're on a two's complement system.  
-   *
-   * So, to output an integer compatible with rand(), we have
-   * two options: Either mask off the highest (32nd) bit, or
-   * shift right by one bit.  Masking with 0x7FFFFFFF will be
-   * compatible with 64-bit MT[], so we'll just use that here.
-   *
-   */
-  return static_cast<int>(0x7FFFFFFF & rand_u32());
-}
-
-extern "C" void srand(unsigned value)
-{
-  seed(static_cast<uint32_t>(value));
-}
-
-extern "C" float randf_cc()
-{
-  return static_cast<float>(rand_u32())/UINT32_MAX;
-}
-
-extern "C" float randf_co()
-{
-  return static_cast<float>(rand_u32())/(UINT32_MAX+1.0f);
-}
-
-extern "C" float randf_oo()
-{
-  return (static_cast<float>(rand_u32())+0.5f)/(UINT32_MAX+1.0f);
-}
-
-extern "C" double randd_cc()
-{
-  return static_cast<double>(rand_u32())/UINT32_MAX;
-}
-
-extern "C" double randd_co()
-{
-  return static_cast<double>(rand_u32())/(UINT32_MAX+1.0);
-}
-
-extern "C" double randd_oo()
-{
-  return (static_cast<double>(rand_u32())+0.5)/(UINT32_MAX+1.0);
-}
-
-extern "C" uint64_t rand_u64()
-{
-  return static_cast<uint64_t>(rand_u32())<<32 | rand_u32();
 }

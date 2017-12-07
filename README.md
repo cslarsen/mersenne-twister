@@ -38,9 +38,10 @@ Performance
 -----------
 
 This implementation is _very fast_.  It runs faster than the reference,
-non-SIMD, implementation in the original paper on the computers I've checked
-with (all Intel CPUs of different generations). To be sure, please run the test
-program by typing `make check`.
+non-SIMD, implementation in the original paper (*and* the more recent code in
+mt19937ar.c) on the computers I've checked with (all Intel CPUs of different
+generations). To be sure, please run the test program by typing `make check`.
+See below for numbers.
 
 The original optimization trick I did was to unroll the loop in
 `generate_number()` three times to avoid the relatively expensive modulus
@@ -78,15 +79,6 @@ the code even more.
 
 Finally, note that people have done SIMD and CUDA implementations.  If
 you are looking for even more speed, I suggest you check them out.
-
-Portability
------------
-
-The code should be portable, although I have only tried on Intel CPUs. I don't
-know if the speed holds up on other CPUs (and I doubt it). If you're not on
-UNIX, you can pretty easily port the code.
-
-The MT19937 algorithm is inherently 32-bit, so you only get 32-bit values.
 
 Compilation and usage
 ---------------------
@@ -173,6 +165,16 @@ Then
 
 Also look at the `Makefile` here as well, it contains a few optimization flags
 that you may want to use.
+
+Portability
+-----------
+
+The code should be portable, although I have only tried on Intel CPUs. I don't
+know if the speed holds up on other CPUs (and I doubt it). If you're not on
+UNIX, you can pretty easily port the code.
+
+The MT19937 algorithm is inherently 32-bit, so you only get 32-bit values.
+
 
 Bugs
 ----

@@ -26,13 +26,13 @@
  * We have an array of 624 32-bit values, and there are 31 unused bits, so we
  * have a seed value of 624*32-31 = 19937 bits.
  */
-static const int SIZE   = 624;
-static const int PERIOD = 397;
-static const int DIFF   = SIZE - PERIOD;
+static const uint_fast32_t SIZE   = 624;
+static const uint_fast32_t PERIOD = 397;
+static const uint_fast32_t DIFF   = SIZE - PERIOD;
 static const uint32_t MAGIC = 0x9908b0df;
 
 static uint32_t MT[SIZE];
-static int index = SIZE;
+static uint_fast32_t index = SIZE;
 
 #define M32(x) (0x80000000 & x) // 32nd Most Significant Bit
 #define L31(x) (0x7FFFFFFF & x) // 31 Least Significant Bits
@@ -51,7 +51,7 @@ static void generate_numbers()
    */
 
   uint32_t y;
-  int i=0;
+  uint_fast32_t i = 0;
 
   // i = [0 ... 225]
   while ( i<(DIFF-1) ) {
@@ -137,7 +137,7 @@ extern "C" void seed(uint32_t value)
   MT[0] = value;
   index = SIZE;
 
-  for ( unsigned i=1; i<SIZE; ++i )
+  for ( uint_fast32_t i=1; i<SIZE; ++i )
     MT[i] = 0x6c078965*(MT[i-1] ^ MT[i-1]>>30) + i;
 }
 

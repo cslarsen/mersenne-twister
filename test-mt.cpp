@@ -235,6 +235,36 @@ static const char* sscale(double n, int decimals = 1)
   return s;
 }
 
+static void report(const Benchmark& res)
+{
+    printf("\n");
+    printf("  min=%gs max=%gs mean=%gs stddev=%gs\n",
+        min(res.times), max(res.times), mean(res.times),
+        stddev(res.times));
+
+    const std::string best = sscale(res.its / min(res.times), 1);
+    const std::string worst = sscale(res.its / max(res.times), 1);
+
+    printf("  %s — %s numbers/second\n", worst.c_str(), best.c_str());
+
+    std::vector<double> persec;
+    for ( auto secs : res.times ) {
+      persec.push_back(res.its / secs);
+    }
+
+    printf("\n"
+           "  R-code for plot:\n"
+           "\n"
+           "  mean <- %g;\n"
+           "  sd <- %g;\n"
+           "  x <- seq(mean-4*sd, mean+4*sd, length=200);\n"
+           "  y <- dnorm(x, mean=mean, sd=sd);\n"
+           "  plot(x, y, type=\"l\", xlab=\"numbers / second\", ylab=\"\");\n"
+           "  title(\"Mersenne Twister Performance\");\n",
+           mean(persec),
+           stddev(persec));
+}
+
 static void run_benchmark(const int passes)
 {
   Benchmark ref, our;
@@ -243,17 +273,8 @@ static void run_benchmark(const int passes)
     printf("\nTiming our implementation (best times over %d passes) ... ",
         passes);
     fflush(stdout);
-
     our = benchmark_hashes(mt::seed, mt::rand_u32, passes);
-
-    printf("\n");
-    printf("  min=%gs max=%gs mean=%gs stddev=%gs\n",
-        min(our.times), max(our.times), mean(our.times),
-        stddev(our.times));
-
-    const std::string best = sscale(our.its / min(our.times), 1);
-    const std::string worst = sscale(our.its / max(our.times), 1);
-    printf("  %s — %s numbers/second\n", worst.c_str(), best.c_str());
+    report(our);
   }
 
   {
@@ -263,15 +284,7 @@ static void run_benchmark(const int passes)
 
     ref = benchmark_hashes(reference::init_genrand, reference::genrand_int32,
         passes);
-
-    printf("\n");
-    printf("  min=%gs max=%gs mean=%gs stddev=%gs\n",
-        min(ref.times), max(ref.times), mean(ref.times),
-        stddev(ref.times));
-
-    const std::string best = sscale(ref.its / min(ref.times), 1);
-    const std::string worst = sscale(ref.its / max(ref.times), 1);
-    printf("  %s — %s numbers/second\n", worst.c_str(), best.c_str());
+    report(ref);
   }
 
   const double ratio = ref.best / our.best;

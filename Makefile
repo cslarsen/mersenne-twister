@@ -5,6 +5,7 @@ CXXFLAGS = -W -Wall -Wextra -Wsign-compare \
 					 -msse \
 					 -O2 \
 					 -march=native \
+					 -funroll-loops \
 					 -ftree-vectorize \
 					 -fomit-frame-pointer
 

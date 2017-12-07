@@ -20,7 +20,7 @@
 
 // Better on older Intel Core i7, but worse on newer Intel Xeon CPUs (undefine
 // it on those).
-#define MT_UNROLL_MORE
+//#define MT_UNROLL_MORE
 
 /*
  * We have an array of 624 32-bit values, and there are 31 unused bits, so we

@@ -29,6 +29,17 @@ namespace reference {
   #include "reference/mt19937ar.h"
 }
 
+struct Benchmark {
+  uint32_t hash;
+  double best;
+  std::vector<double> times;
+  size_t its;
+
+  Benchmark() : hash(0xffffffff), best(9999999999), its(1)
+  {
+  }
+};
+
 struct Timer {
   double mark_;
 
@@ -54,44 +65,6 @@ struct Timer {
   }
 };
 
-template<class X, class Y>
-#if defined(__clang__)
-  [[clang::optnone]]
-#endif
-static uint32_t benchmark_hash(
-    uint32_t seed,
-    uint64_t iterations,
-    X set_seed,
-    Y draw_u32)
-#if defined(__GNUC__)
-# if !defined(__clang__)
-  __attribute__((optimize("-O0")))
-# endif
-#endif
-{
-  // Use a hash so that the compiler doesn't optimize away the for-loop
-  uint32_t hash = 0xffffffff;
-
-  set_seed(seed);
-
-  for ( uint64_t n = 0; n < iterations; ++n ) {
-    hash ^= draw_u32();
-  }
-
-  return hash;
-}
-
-struct Benchmark {
-  uint32_t hash;
-  double best;
-  std::vector<double> times;
-  size_t its;
-
-  Benchmark() : hash(0xffffffff), best(9999999999), its(1)
-  {
-  }
-};
-
 template<class SEEDFUNC, class RANDFUNC>
 #if defined(__clang__)
   [[clang::optnone]]
@@ -106,6 +79,55 @@ static Benchmark benchmark_hashes(
   __attribute__((optimize("-O0")))
 # endif
 #endif
+  ;
+
+template<class X, class Y>
+#if defined(__clang__)
+  [[clang::optnone]]
+#endif
+static uint32_t benchmark_hash(
+    uint32_t seed,
+    uint64_t iterations,
+    X set_seed,
+    Y draw_u32)
+#if defined(__GNUC__)
+# if !defined(__clang__)
+  __attribute__((optimize("-O0")))
+# endif
+#endif
+  ;
+
+template<class X, class Y>
+#if defined(__clang__)
+  [[clang::optnone]]
+#endif
+static uint32_t benchmark_hash(
+    uint32_t seed,
+    uint64_t iterations,
+    X set_seed,
+    Y draw_u32)
+{
+  // Use a hash so that the compiler doesn't optimize away the for-loop
+  uint32_t hash = 0xffffffff;
+
+  set_seed(seed);
+
+  for ( uint64_t n = 0; n < iterations; ++n ) {
+    hash ^= draw_u32();
+  }
+
+  return hash;
+}
+
+template<class SEEDFUNC, class RANDFUNC>
+#if defined(__clang__)
+  [[clang::optnone]]
+#endif
+static Benchmark benchmark_hashes(
+    SEEDFUNC set_seed,
+    RANDFUNC draw_u32,
+    const int passes = 15,
+    const size_t subiterations = 200000000ULL)
 {
   Benchmark result;
   result.its = subiterations;
@@ -283,7 +305,7 @@ int main(int argc, char** argv)
 
       if ( (seed % 100) == 0 ) {
         printf("\r  * Pass %d/%d %4" PRIu64 "%%", 1 + pass, passes,
-            100ULL * uint64_t(seed)/uint64_t(seeds));
+            100UL * uint64_t(seed)/uint64_t(seeds));
         fflush(stdout);
       }
 

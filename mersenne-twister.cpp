@@ -39,7 +39,7 @@ static int index = SIZE;
 
 #define UNROLL(expr) \
   y = M32(MT[i]) | L31(MT[i+1]); \
-  MT[i] = MT[expr] ^ (y >> 1) ^ ((int32_t(y) << 31) >> 31) & MAGIC; \
+  MT[i] = MT[expr] ^ (y >> 1) ^ (((int32_t(y) << 31) >> 31) & MAGIC); \
   ++i;
 
 static void generate_numbers()

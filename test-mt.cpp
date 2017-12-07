@@ -126,8 +126,8 @@ template<class SEEDFUNC, class RANDFUNC>
 static Benchmark benchmark_hashes(
     SEEDFUNC set_seed,
     RANDFUNC draw_u32,
-    const int passes = 15,
-    const size_t subiterations = 200000000ULL)
+    const int passes,
+    const size_t subiterations)
 {
   Benchmark result;
   result.its = subiterations;

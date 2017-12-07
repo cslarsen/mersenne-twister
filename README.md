@@ -93,13 +93,15 @@ To build the example, just type
     $ make clean check
 
 You'll see if this implementation runs faster than the reference non-SIMD
-Mersenne Twister. On an older Intel Core i7 (my machine), the output looks like
-this:
+Mersenne Twister.
+
+On an older Intel Core i7 (my machine), using clang 4 (I think) the output
+looks like this:
 
     $ ./test-mt 20
     Testing Mersenne Twister with reference implementation
-      * Pass 1/2  OK       
-      * Pass 2/2  OK       
+      * Pass 1/2  OK
+      * Pass 2/2  OK
 
     Timing our implementation (best times over 20 passes) ... 
       1.0321990s 
@@ -117,7 +119,42 @@ this:
 
     1.12485 times faster than the reference (ratio of best runs)
 
-You can pass the number of iterations to perform on the command line.
+On an Intel Xeon with gcc 6.3:
+
+    Testing Mersenne Twister with reference implementation
+      * Pass 1/2  OK
+      * Pass 2/2  OK
+
+    Timing our implementation (best times over 20 passes) ...
+      0.5661380s
+      0.5654360s
+      0.5652670s .
+      0.5649580s ...
+      0.5641450s ...........
+      min=0.564145s max=0.569173s mean=0.565719s stddev=0.00129429s
+      351.4 million — 354.5 million numbers/second
+
+    Timing reference mt19937ar.c (best times over 20 passes) ...
+      0.9026930s
+      0.9001340s
+      0.8963510s .
+      0.8963100s .
+      0.8959060s ..
+      0.8956320s .
+      0.8955830s ......
+      0.8953400s .
+      min=0.89534s max=0.902693s mean=0.896933s stddev=0.00172019s
+      221.6 million — 223.4 million numbers/second
+
+    1.58707 times faster than the reference (ratio of best runs)
+
+You can pass the number of iterations to perform on the command line, e.g.
+
+    $ ./test-mt 100
+
+This is quite important to let the CPU throttle up to get the best numbers. For
+each iteration, the time is printed if it's better than seen before. If it
+isn't better, a dot is printed.
 
 To actually use the code, include the header and cpp file into your project.
 Then
